@@ -50,6 +50,10 @@ public class CategoriaControllerTest {
     }
 
     //Prueba para agregar categorias
-    
+    @Test
+    void agregarCategoria_returnsCreated() {
+        
+    }
+
 
 }
