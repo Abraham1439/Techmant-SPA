@@ -17,6 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techmant.categoria.model.Categoria;
 import com.techmant.categoria.service.CategoriaService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("api/v1/categoria")
 
@@ -25,7 +31,11 @@ public class CategoriaController {
     @Autowired
     private CategoriaService categoriaService;
 
-
+    @Operation(summary = "obtener uan lista de todas las categorias de los servicios")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Todas las listas de categorias encontradas", content = @Content(schema = @Schema(implementation = Categoria.class)))
+    })
+    
     //Metodo para obtener todas las categorias del servicio
     @GetMapping
     public ResponseEntity<List<Categoria>> listarCategorias() {
