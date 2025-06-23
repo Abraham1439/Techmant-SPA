@@ -11,7 +11,7 @@ import com.techmant.solicitud.repository.SolicitudRepository;
 @Service
 public class SolicitudService {
 
-    @Autowired
+       @Autowired
     private SolicitudRepository solicitudRepository;
 
     //Crear una nueva solicitud

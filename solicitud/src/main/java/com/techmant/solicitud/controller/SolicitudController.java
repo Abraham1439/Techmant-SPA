@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.techmant.solicitud.model.Solicitud;
 import com.techmant.solicitud.service.SolicitudService;
+
+
+
 @RestController
 @RequestMapping("/api/v1/solicitudes")
 public class SolicitudController {
