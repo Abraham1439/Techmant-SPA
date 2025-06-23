@@ -33,7 +33,7 @@ public class Agendamiento {
     private String observaciones;
 
     //llaves foraneas
-    @Column(name = "equipo_id_equipo")
-    private Long dispositivoId;// cambiar esto por solicitud 
+    @Column(nullable = false)
+    private Long idSolicitud;
 
 }

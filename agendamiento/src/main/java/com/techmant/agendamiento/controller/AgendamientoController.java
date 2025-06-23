@@ -35,16 +35,14 @@ public class AgendamientoController {
     }
 
 
-    //Endpoint para agregar una agenda 
+     //Endpoint para agregar una agenda (Con conexion)
     @PostMapping
-    public ResponseEntity<Agendamiento> createAgendamiento(@RequestBody Agendamiento agendamiento) {
+    public ResponseEntity<?> agregarAgendamiento(@RequestBody Agendamiento nuevo) {
         try {
-            Agendamiento nuevoAgendamiento = agendamientoService.createAgendamiento(agendamiento);
-            return ResponseEntity.ok(nuevoAgendamiento);
-
-        }catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-
+            Agendamiento agendamiento = agendamientoService.agregarAgendamiento(nuevo);
+            return ResponseEntity.status(201).body(agendamiento);
+        }catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
         }
     }
 
@@ -85,7 +83,7 @@ public class AgendamientoController {
             agendamiento2.setFechaCita(agenda.getFechaCita());
             agendamiento2.setObservaciones(agenda.getObservaciones());
             //actualizar el registro
-            agendamientoService.createAgendamiento(agendamiento2);
+            agendamientoService.agregarAgendamiento(agendamiento2);
             return ResponseEntity.ok(agendamiento2);
         }catch (Exception e) {
             //si la agenda no existe 
