@@ -34,7 +34,7 @@ public class AsignacionController {
     }
 
     //Endpoint para buscar una asignacion por su id 
-    @GetMapping("{/id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Asignacion> obtenerAsignacionporId(@PathVariable Long id) {
         Asignacion asignacion = asignacionService.obtenerAsignacionporId(id);
         if(asignacion == null) {
