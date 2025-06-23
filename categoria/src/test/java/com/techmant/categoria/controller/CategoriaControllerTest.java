@@ -44,9 +44,11 @@ public class CategoriaControllerTest {
             //validar el archivo JSOn (solo con los id)
             mockMvc.perform(get("api/v1/categoria")).andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(1L));
         } catch (Exception ex) {
-            
+
         }
         
     }
+
+    //Seguir con los demas 
 
 }
