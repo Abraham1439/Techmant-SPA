@@ -27,6 +27,11 @@ public class Asignacion {
     @Column(name = "nombre_caso") //tipo de caso que se le asigno 
     private String nombreCaso;
 
+    //llaves foraneas
+    @Column(nullable = false)
+    private Long idTecnico; 
+
+
     
 
 }
