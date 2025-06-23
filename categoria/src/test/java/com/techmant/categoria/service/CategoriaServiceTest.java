@@ -78,7 +78,6 @@ public class CategoriaServiceTest {
         assertThat(result).isEqualTo(catIdCategoria);
     }
 
-
     //Prueba para eliminar una categoria 
     @Test 
     void eliminarPorId_returnsDeleteCategoria () {

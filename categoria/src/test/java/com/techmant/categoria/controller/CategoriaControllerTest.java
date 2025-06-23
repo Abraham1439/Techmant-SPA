@@ -49,6 +49,7 @@ public class CategoriaControllerTest {
         
     }
 
-    //Seguir con los demas 
+    //Prueba para agregar categorias
+    
 
 }
