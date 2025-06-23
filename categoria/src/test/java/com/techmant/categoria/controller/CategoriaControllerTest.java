@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.techmant.categoria.model.Categoria;
 import com.techmant.categoria.service.CategoriaService;
@@ -51,9 +52,25 @@ public class CategoriaControllerTest {
 
     //Prueba para agregar categorias
     @Test
-    void agregarCategoria_returnsCreated() {
+    void agregarCategoria_returnsCreatedAndJson() {
+        try {
+            Categoria nuevaCategoria = new Categoria(1L, "Diagnostico", "Evaluación inicial del dispositivo");
+
+            //simular que el servicio retorna la categoría guardada
+            when(categoriaService.agregarCategoria(nuevaCategoria)).thenReturn(nuevaCategoria);
+
+            //ejecutar el metodo del endpoint del microservicio a probar
+            mockMvc.perform(post("api/v1/categoria").contentType("application/json").content())
+        }
         
     }
+
+
+
+
+
+
+
 
 
 }
