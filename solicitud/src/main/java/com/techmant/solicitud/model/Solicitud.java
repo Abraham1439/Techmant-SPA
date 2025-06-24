@@ -1,7 +1,10 @@
 package com.techmant.solicitud.model;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,16 +25,20 @@ public class Solicitud {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID único de la solicitud", example = "1")
     private Long idSolicitud; // Asegúrate de definir un identificador
     
     @Column(nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy")
-    private javax.xml.crypto.Data fecha_solicitud; //DD/MM/YYYY
+    @Schema(description = "Fecha en la que se realiza la solicitud", example = "24/06/2025")
+    private Date fecha_solicitud;
 
     @Column(nullable = true) 
+    @Schema(description = "Comentario adicional que puede incluir el cliente", example = "Aumento de memoria Ram")
     private String comentario; // Comentarios adicionales
     
     @Column(nullable = false)
+    @Schema(description = "Total a pagar por la solicitud", example = "30000")
     private String total; // Total de la solicitud
 }  
 
