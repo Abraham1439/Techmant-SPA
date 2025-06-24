@@ -33,5 +33,5 @@ public class Solicitud {
     
     @Column(nullable = false)
     private String total; // Total de la solicitud
-}
+}  
 
