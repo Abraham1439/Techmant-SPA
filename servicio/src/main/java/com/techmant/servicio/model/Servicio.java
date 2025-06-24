@@ -34,5 +34,4 @@ public class Servicio {
     @Column (nullable = false)
     private Long idCategoria; 
 
-
 }
