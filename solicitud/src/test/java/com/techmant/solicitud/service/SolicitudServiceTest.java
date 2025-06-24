@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -40,7 +41,8 @@ public class SolicitudServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        solicitud = new Solicitud(1L, new javax.xml.crypto.Data() {}, "Comentario de prueba", "100.00");
+        // Cambiar el tipo de dato a Date para fecha_solicitud
+        solicitud = new Solicitud(1L, new Date(), "Comentario de prueba", "100.00");
     }
 
     @Test
@@ -58,8 +60,8 @@ public class SolicitudServiceTest {
     @Test
     void obtenerTodasSolicitudes_returnsList() {
         List<Solicitud> solicitudes = Arrays.asList(
-                new Solicitud(1L, new javax.xml.crypto.Data() {}, "Comentario 1", "50.00"),
-                new Solicitud(2L, new javax.xml.crypto.Data() {}, "Comentario 2", "75.00"));
+                new Solicitud(1L, new Date(), "Comentario 1", "50.00"),
+                new Solicitud(2L, new Date(), "Comentario 2", "75.00"));
 
         when(solicitudRepository.findAll()).thenReturn(solicitudes);
 
@@ -94,7 +96,7 @@ public class SolicitudServiceTest {
 
     @Test
     void actualizarSolicitud_successfully() {
-        Solicitud solicitudActualizada = new Solicitud(1L, new javax.xml.crypto.Data() {}, "Comentario actualizado", "150.00");
+        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", "150.00");
 
         when(solicitudRepository.existsById(1L)).thenReturn(true);
         when(solicitudRepository.save(any(Solicitud.class))).thenReturn(solicitudActualizada);
@@ -108,7 +110,7 @@ public class SolicitudServiceTest {
 
     @Test
     void actualizarSolicitud_notFound() {
-        Solicitud solicitudActualizada = new Solicitud(1L, new javax.xml.crypto.Data() {}, "Comentario actualizado", "150.00");
+        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", "150.00");
 
         when(solicitudRepository.existsById(1L)).thenReturn(false);
 
