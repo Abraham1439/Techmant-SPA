@@ -86,7 +86,7 @@ public class AsignacionController {
             return ResponseEntity.noContent().build();
         }catch (Exception e) {
             //Si no existe el servicio retorno not found 
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok("Asignacion con ID:" + id + "eliminado correctamente");
         }
     }
 
