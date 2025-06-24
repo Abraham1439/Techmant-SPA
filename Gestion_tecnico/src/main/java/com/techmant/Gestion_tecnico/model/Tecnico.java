@@ -19,7 +19,7 @@ public class Tecnico {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long idTecnico;
 
     @Column(nullable = false)
     private String nombre;

@@ -31,7 +31,7 @@ public class TecnicoService {
     // Actualizar un técnico
     public Tecnico actualizarTecnico(Long id, Tecnico tecnicoActualizado) {
         if (tecnicoRepository.existsById(id)) {
-            tecnicoActualizado.setId(id);
+            tecnicoActualizado.setIdTecnico(id);
             return tecnicoRepository.save(tecnicoActualizado);
         }
         return null;
