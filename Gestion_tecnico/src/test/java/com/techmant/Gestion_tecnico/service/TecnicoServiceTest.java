@@ -1,114 +1,126 @@
 package com.techmant.Gestion_tecnico.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.NoSuchElementException;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.util.Arrays;
-import java.util.List;
-
 
 import com.techmant.Gestion_tecnico.model.Tecnico;
 import com.techmant.Gestion_tecnico.repository.TecnicoRepository;
 
 @ExtendWith(MockitoExtension.class)
 public class TecnicoServiceTest {
-
     
-   @Mock
-    private TecnicoRepository repository;
+    @Mock
+    private TecnicoRepository tecnicoRepository;
 
     @InjectMocks
-    private TecnicoService service;
+    private TecnicoService tecnicoService;
 
+    private Tecnico tecnico;
 
-    @Test
-    void crearTecnico_devuelveTecnicoGuardado() {
-    // Datos simulados de entrada y salida
-    Tecnico entrada = new Tecnico(null, "Carlos Nuevo", "Soporte");
-    Tecnico guardado = new Tecnico(1L, "Carlos Nuevo", "Soporte");
-
-    // Configurar comportamiento simulado del repositorio
-    when(repository.save(entrada)).thenReturn(guardado);
-
-    // Ejecutar método del servicio
-    Tecnico resultado = service.crearTecnico(entrada);
-
-    // Validar resultado
-    assertThat(resultado.getId()).isEqualTo(1L);
-    assertThat(resultado.getNombre()).isEqualTo("Carlos Nuevo");
-    assertThat(resultado.getEspecialidad()).isEqualTo("Soporte");
-
-    // Verificar que se llamó al método save del repositorio
-    verify(repository).save(entrada);
-
-    }
-
-   @Test
-   void obtenerTodosLosTecnicos_retornaListaDesdeRepositorio() {
-    // Creamos una lista que simula la respuesta del repositorio
-    List<Tecnico> mockList = Arrays.asList(
-        new Tecnico(1L, "Carlos Soto", "Electricidad"),
-        new Tecnico(2L, "María Pérez", "Redes"));
-
-    // Definimos el comportamiento del repositorio simulado
-    when(repository.findAll()).thenReturn(mockList);
-
-    // Llamamos al método del servicio que vamos a testear
-    List<Tecnico> resultado = service.obtenerTodosLosTecnicos();
-
-    // Verificamos que el resultado sea exactamente la lista simulada
-    assertThat(resultado).isEqualTo(mockList);
-   
-    }
-    
-    @Test
-    void obtenerTecnicoPorId_devuelveTecnicoSiExiste() {
-    // Técnico simulado
-    Tecnico tecnico = new Tecnico(1L, "Luis Rojas", "Mecánica");
-
-    // Aunque no uses Optional directamente, findById lo retorna, así que en el mock sí se usa
-    when(repository.findById(1L)).thenReturn(java.util.Optional.of(tecnico));
-
-    // Llamar al método
-    Tecnico resultado = service.obtenerTecnicoPorId(1L);
-
-    // Verificar resultado
-    assertThat(resultado).isNotNull();
-    assertThat(resultado.getId()).isEqualTo(1L);
-    assertThat(resultado.getNombre()).isEqualTo("Luis Rojas");
-    assertThat(resultado.getEspecialidad()).isEqualTo("Mecánica");
-
-    // Verificar que el método del repositorio fue llamado
-    verify(repository).findById(1L);
-}
-
-    @Test
-    void actualizarTecnico_existente_devuelveActualizado() {
-        Tecnico datosActualizados = new Tecnico(null, "Pedro Actualizado", "Redes");
-        Tecnico esperado = new Tecnico(1L, "Pedro Actualizado", "Redes");
-
-        when(repository.existsById(1L)).thenReturn(true);
-        when(repository.save(any(Tecnico.class))).thenReturn(esperado);
-
-        Tecnico resultado = service.actualizarTecnico(1L, datosActualizados);
-
-        assertThat(resultado.getId()).isEqualTo(1L);
-        assertThat(resultado.getNombre()).isEqualTo("Pedro Actualizado");
-        verify(repository).save(datosActualizados);
+    @BeforeEach
+    void setUp() {
+        tecnico = new Tecnico(1L, "Juan Pérez", "Electricidad");
     }
 
     @Test
-    void eliminarTecnico_existente_llamaDeleteById() {
-        when(repository.existsById(1L)).thenReturn(true);
+    void obtenerTodosLosTecnicos_returnsList() {
+        List<Tecnico> tecnicos = Arrays.asList(tecnico);
+        when(tecnicoRepository.findAll()).thenReturn(tecnicos);
 
-        service.eliminarTecnico(1L);
+        List<Tecnico> result = tecnicoService.obtenerTodosLosTecnicos();
 
-        verify(repository).deleteById(1L);
+        assertEquals(1, result.size());
+        assertEquals("Juan Pérez", result.get(0).getNombre());
+    }
+
+    @Test
+    void obtenerTecnicoPorId_found() {
+        when(tecnicoRepository.findById(1L)).thenReturn(Optional.of(tecnico));
+
+        Tecnico result = tecnicoService.obtenerTecnicoPorId(1L);
+
+        assertNotNull(result);
+        assertEquals("Juan Pérez", result.getNombre());
+    }
+
+    @Test
+    void obtenerTecnicoPorId_notFound_throwsException() {
+        when(tecnicoRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> {
+            tecnicoService.obtenerTecnicoPorId(1L);
+        });
+    }
+
+    @Test
+    void crearTecnico_savesAndReturns() {
+        when(tecnicoRepository.save(tecnico)).thenReturn(tecnico);
+
+        Tecnico result = tecnicoService.crearTecnico(tecnico);
+
+        assertNotNull(result);
+        assertEquals("Juan Pérez", result.getNombre());
+    }
+
+    @Test
+    void actualizarTecnico_successful() {
+        Tecnico updated = new Tecnico(1L, "Juan Pérez Actualizado", "Fontanería");
+
+        when(tecnicoRepository.existsById(1L)).thenReturn(true);
+        when(tecnicoRepository.save(updated)).thenReturn(updated);
+
+        Tecnico result = tecnicoService.actualizarTecnico(1L, updated);
+
+        assertEquals("Juan Pérez Actualizado", result.getNombre());
+        assertEquals("Fontanería", result.getEspecialidad());
+    }
+
+    @Test
+    void actualizarTecnico_notFound_returnsNull() {
+        when(tecnicoRepository.existsById(1L)).thenReturn(false);
+
+        Tecnico result = tecnicoService.actualizarTecnico(1L, tecnico);
+
+        assertNull(result);
+    }
+
+    @Test
+    void eliminarTecnico_successful() {
+        when(tecnicoRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(tecnicoRepository).deleteById(1L);
+
+        assertDoesNotThrow(() -> tecnicoService.eliminarTecnico(1L));
+
+        verify(tecnicoRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    void eliminarTecnico_notFound_doesNothing() {
+        when(tecnicoRepository.existsById(1L)).thenReturn(false);
+
+        assertDoesNotThrow(() -> tecnicoService.eliminarTecnico(1L));
+
+        verify(tecnicoRepository, never()).deleteById(any(Long.class));
     }
 }
