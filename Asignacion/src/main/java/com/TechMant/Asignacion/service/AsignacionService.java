@@ -10,7 +10,10 @@ import com.TechMant.Asignacion.model.Asignacion;
 import com.TechMant.Asignacion.repository.AsignacionRepository;
 import com.TechMant.Asignacion.webtecnico.TecnicoTec;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class AsignacionService {
     @Autowired
     private AsignacionRepository asignacionRepository;
@@ -28,7 +31,7 @@ public class AsignacionService {
     }
 
 
-    //Metodo para guardar un nuevo servicio(Con conexion)
+    //Metodo para guardar un nueva Asignacion(Con conexion)
     public Asignacion saveAsignacion(Asignacion nuevaAsignacion) {
         //verificar si la categoria existe 
         //para eso me comunico con el microservicio de categoria
@@ -50,9 +53,5 @@ public class AsignacionService {
         //si el servicio existe se elimina 
         asignacionRepository.deleteById(id);
     }
-
-
-
-
 
 }

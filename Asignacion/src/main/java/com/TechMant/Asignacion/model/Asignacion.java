@@ -31,7 +31,4 @@ public class Asignacion {
     @Column(nullable = false)
     private Long idTecnico; 
 
-
-    
-
 }

@@ -48,7 +48,7 @@ public class AsignacionController {
 
     //Endpoint para crear una asignacion nueva(con conexion)
     @PostMapping 
-    public ResponseEntity<?> agregarAseignacion(@RequestBody Asignacion nueva) {
+    public ResponseEntity<?> agregarAsignacion(@RequestBody Asignacion nueva) {
         try {
             Asignacion asignacion = asignacionService.saveAsignacion(nueva);
             return ResponseEntity.status(201).body(asignacion);
@@ -65,7 +65,7 @@ public class AsignacionController {
             //Creamos un objeto para buscar el servicio que queremos modificar
             Asignacion asignacion2 = asignacionService.obtenerAsignacionporId(id);
             //si este existe modificamos los datos 
-            asignacion2.setIdTecnico(id);
+            asignacion2.setIdAsignacion(id);
             asignacion2.setNombreAsignado(asig.getNombreAsignado());
             asignacion2.setNombreCaso(asig.getNombreCaso());
             //actualizar el servicio

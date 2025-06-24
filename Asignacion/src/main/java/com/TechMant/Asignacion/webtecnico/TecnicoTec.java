@@ -13,7 +13,7 @@ public class TecnicoTec {
     private final WebClient webclient;
 
     //metodo constructor de la clase 
-    public TecnicoTec(@Value("${categoria-service.url}") String categoriaServiceUrl) {
+    public TecnicoTec(@Value("${tecnico-service.url}") String categoriaServiceUrl) {
         this.webclient = WebClient.builder().baseUrl(categoriaServiceUrl).build();
     }
 
