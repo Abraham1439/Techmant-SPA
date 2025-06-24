@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import com.techmant.Gestion_tecnico.model.Tecnico;
 import com.techmant.Gestion_tecnico.repository.TecnicoRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class TecnicoService {
     @Autowired
     private TecnicoRepository tecnicoRepository;
