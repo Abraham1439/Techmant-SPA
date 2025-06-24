@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,16 +46,49 @@ public class AsignacionController {
         }
     }
 
-    //Endpoint para crear una asignacion nueva
+    //Endpoint para crear una asignacion nueva(con conexion)
     @PostMapping 
-    public ResponseEntity<Asignacion> agregarAsignacion(@RequestBody Asignacion asignacion) {
+    public ResponseEntity<?> agregarAseignacion(@RequestBody Asignacion nueva) {
         try {
-            Asignacion nuevaAsignacion = asignacionService.agregarAsignacion(asignacion);
-            return ResponseEntity.ok(nuevaAsignacion);
+            Asignacion asignacion = asignacionService.saveAsignacion(nueva);
+            return ResponseEntity.status(201).body(asignacion);
         }catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(404).body(e.getMessage());
         }
-    } 
+    }
+
+
+    //Endpoint para actualiazar un agendamiento por su ID 
+    @PutMapping("/{id}")
+    public ResponseEntity<Asignacion> modificarAsignacion(@PathVariable Long id, @RequestBody Asignacion asig) {
+        try {
+            //Creamos un objeto para buscar el servicio que queremos modificar
+            Asignacion asignacion2 = asignacionService.obtenerAsignacionporId(id);
+            //si este existe modificamos los datos 
+            asignacion2.setIdTecnico(id);
+            asignacion2.setNombreAsignado(asig.getNombreAsignado());
+            asignacion2.setNombreCaso(asig.getNombreCaso());
+            //actualizar el servicio
+            asignacionService.saveAsignacion(asignacion2);
+            return ResponseEntity.ok(asignacion2);
+        }catch (Exception e) {
+            //Si el servicio no existe 
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    //Endpoint para eliminar un servicio por su ID 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarAsignacionPorId(@PathVariable Long id) {
+        try {
+            asignacionService.eliminarAsignacionPorId(id);
+            return ResponseEntity.noContent().build();
+        }catch (Exception e) {
+            //Si no existe el servicio retorno not found 
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     
 }
