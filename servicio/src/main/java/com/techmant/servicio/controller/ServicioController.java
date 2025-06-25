@@ -16,14 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techmant.servicio.model.Servicio;
 import com.techmant.servicio.service.ServicioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("api/v1/servicios")
-
+@Tag(name = "Servicios", description = "API para gestionar servicios ofrecidos")
 public class ServicioController {
 
     @Autowired
     private ServicioService servicioService;
 
+    @Operation(summary = "Obtener todos los servicios", description = "Devuelve una lista con todos los servicios registrados")
+    @ApiResponse(responseCode = "200", description = "Lista de servicios obtenida correctamente")
     //Enpoint para obtener todos los servicios 
     @GetMapping
     public ResponseEntity<List<Servicio>> listarServicios() {
@@ -37,7 +44,11 @@ public class ServicioController {
         return ResponseEntity.ok(servicios);
     }
 
-
+    @Operation(summary = "Obtener servicio por ID", description = "Busca un servicio específico usando su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio encontrado"),
+        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    })
 
     //Endpoint para buscar un servicio por su id 
     @GetMapping("/{id}")
@@ -51,6 +62,11 @@ public class ServicioController {
     }
 
 
+    @Operation(summary = "Crear un nuevo servicio", description = "Registra un nuevo servicio en la base de datos")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio creado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Solicitud inválida")
+    })
     //Endpoint para crear un servicio nuevo(con conexion)
     @PostMapping
     public ResponseEntity<?> agregarServicio(@RequestBody Servicio nuevo) {
@@ -63,7 +79,11 @@ public class ServicioController {
 
     }
 
-
+     @Operation(summary = "Actualizar servicio por ID", description = "Actualiza los datos de un servicio existente por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio actualizado correctamente"),
+        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    })
 
     //Endpoint para actualiazar un servicio por su ID 
     @PutMapping("/{id}")
@@ -85,7 +105,11 @@ public class ServicioController {
         }
     }
 
-
+    @Operation(summary = "Eliminar servicio por ID", description = "Elimina un servicio específico usando su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Servicio eliminado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    })
 
     //Endpoint para eliminar un servicio por su ID 
     @DeleteMapping("/{id}") 

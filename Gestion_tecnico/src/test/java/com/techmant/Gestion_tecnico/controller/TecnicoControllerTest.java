@@ -29,7 +29,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(TecnicoController.class)
 public class TecnicoControllerTest {
-@Autowired
+    
+
+    
+    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -41,7 +44,7 @@ public class TecnicoControllerTest {
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        tecnico = new Tecnico(1L, "Juan Pérez", "Electricidad");
+        tecnico = new Tecnico(1L, "Juan Pérez", "Reparación de teléfonos móviles");
     }
 
     @Test
@@ -51,22 +54,22 @@ public class TecnicoControllerTest {
         mockMvc.perform(post("/api/v1/tecnicos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tecnico)))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk()) // Cambiar a 201 si el controlador lo retorna
                 .andExpect(jsonPath("$.nombre").value("Juan Pérez"))
-                .andExpect(jsonPath("$.especialidad").value("Electricidad"));
+                .andExpect(jsonPath("$.especialidad").value("Reparación de teléfonos móviles"));
     }
 
     @Test
     void obtenerTodosLosTecnicos_returnsList() throws Exception {
         List<Tecnico> tecnicos = Arrays.asList(
-                new Tecnico(1L, "Juan Pérez", "Electricidad"),
-                new Tecnico(2L, "Ana Gómez", "Fontanería"));
+                new Tecnico(1L, "Juan Pérez", "Reparación de teléfonos móviles"),
+                new Tecnico(2L, "Ana Gómez", "Soporte técnico de tablets"));
 
         when(tecnicoService.obtenerTodosLosTecnicos()).thenReturn(tecnicos);
 
         mockMvc.perform(get("/api/v1/tecnicos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
+                .andExpect(jsonPath("$[0].idTecnico").value(1L)) // Corregido a idTecnico para que coincida con entidad
                 .andExpect(jsonPath("$[1].nombre").value("Ana Gómez"));
     }
 
@@ -76,16 +79,13 @@ public class TecnicoControllerTest {
 
         mockMvc.perform(get("/api/v1/tecnicos/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.idTecnico").value(1L)) // Corregido a idTecnico
                 .andExpect(jsonPath("$.nombre").value("Juan Pérez"));
     }
 
-
-    
-
     @Test
     void actualizarTecnico_successfully() throws Exception {
-        Tecnico actualizado = new Tecnico(1L, "Juan Pérez Actualizado", "Fontanería");
+        Tecnico actualizado = new Tecnico(1L, "Juan Pérez Actualizado", "Soporte técnico de laptops");
 
         when(tecnicoService.actualizarTecnico(1L, actualizado)).thenReturn(actualizado);
 
@@ -94,7 +94,7 @@ public class TecnicoControllerTest {
                 .content(objectMapper.writeValueAsString(actualizado)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("Juan Pérez Actualizado"))
-                .andExpect(jsonPath("$.especialidad").value("Fontanería"));
+                .andExpect(jsonPath("$.especialidad").value("Soporte técnico de laptops"));
     }
 
     @Test
@@ -103,4 +103,4 @@ public class TecnicoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Técnico con ID 1 eliminado correctamente."));
     }
-}
+}    
