@@ -4,30 +4,42 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Entidad que representa un equipo en el sistema
+ */
 @Entity
 @Table(name = "Equipos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Schema(description = "Modelo que representa un equipo en el sistema")
 public class Equipos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_equipo")
+    @Schema(description = "Identificador único del equipo", example = "1")
     private Long idEquipo;
+    
     @Column(name = "tipo_de_dispositivo")
-private String tipoDeDispositivo;
+    @Schema(description = "Tipo de dispositivo del equipo", example = "Laptop", required = true)
+    private String tipoDeDispositivo;
+    
     @Column
+    @Schema(description = "Marca del equipo", example = "Dell", required = true)
     private String marca;
+    
     @Column(name="nro_serie")
+    @Schema(description = "Número de serie del equipo", example = "ABC123456", required = true)
     private String nroSerie;
+    
     @Column
+    @Schema(description = "Descripción detallada del equipo", example = "Laptop Dell XPS 15, 16GB RAM, 512GB SSD")
     private String descripcion;
-    // Cambio de nombre para que relacione con el usuario 
+    
     @Column(name="id_usuario")
+    @Schema(description = "ID del usuario al que está asignado el equipo", example = "123", required = true)
     private Long idUsuario;
-
-    // Se elimino la columna id_tipo porque no tiene relación con ninguna tabla
 }
