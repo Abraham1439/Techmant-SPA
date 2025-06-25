@@ -60,7 +60,7 @@ public class ResenaControllerTest {
         mockMvc.perform(post("/api/v1/resena")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(resena)))
-                .andExpect(status().isOk())  // Según controlador es 200 OK
+                .andExpect(status().isOk())  //Devuelve 200 OK
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"))
                 .andExpect(jsonPath("$.calificacion").value(5));
     }
@@ -112,7 +112,7 @@ public class ResenaControllerTest {
         doNothing().when(resenaService).eliminarResena(1L);
 
         mockMvc.perform(delete("/api/v1/resena/1"))
-                .andExpect(status().isOk())  // Según tu controlador devuelve 200 OK
+                .andExpect(status().isOk())  //devuelve 200 OK
                 .andExpect(content().string("Resena con ID 1 eliminada correctamente."));
     }
 }

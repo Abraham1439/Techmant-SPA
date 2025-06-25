@@ -85,18 +85,18 @@ public class ServicioControllerTest {
 
     //Prueba para modificar un Servicio
     @Test
-void modificarServicio_deberiaActualizarServicio_usandoObjectMapper() {
-    try {
-        // Datos originales y modificados
-        Servicio servicioExistente = new Servicio(1L, "Formateo", "Sistema viejo", 15000f, 5L);
-        Servicio servicioActualizado = new Servicio(1L, "Formateo Avanzado", "Sistema actualizado con drivers", 18000f, 5L);
+    void modificarServicio_deberiaActualizarServicio_usandoObjectMapper() {
+        try {
+            // Datos originales y modificados
+            Servicio servicioExistente = new Servicio(1L, "Formateo", "Sistema viejo", 15000f, 5L);
+            Servicio servicioActualizado = new Servicio(1L, "Formateo Avanzado", "Sistema actualizado con drivers", 18000f, 5L);
 
-        when(servicioService.obtenerServicioPorId(1L)).thenReturn(servicioExistente);
-        when(servicioService.saveServicio(any(Servicio.class))).thenReturn(servicioActualizado);
+            when(servicioService.obtenerServicioPorId(1L)).thenReturn(servicioExistente);
+            when(servicioService.saveServicio(any(Servicio.class))).thenReturn(servicioActualizado);
 
-        ObjectMapper objectMapper = new ObjectMapper();
+            ObjectMapper objectMapper = new ObjectMapper();
 
-        mockMvc.perform(put("/api/v1/servicios/1").contentType("application/json").content(objectMapper.writeValueAsString(servicioActualizado))).andExpect(status().isOk()).andExpect(jsonPath("$.nombreServicio").value("Formateo Avanzado")).andExpect(jsonPath("$.descripcion").value("Sistema actualizado con drivers")).andExpect(jsonPath("$.precio").value(18000f));
+            mockMvc.perform(put("/api/v1/servicios/1").contentType("application/json").content(objectMapper.writeValueAsString(servicioActualizado))).andExpect(status().isOk()).andExpect(jsonPath("$.nombreServicio").value("Formateo Avanzado")).andExpect(jsonPath("$.descripcion").value("Sistema actualizado con drivers")).andExpect(jsonPath("$.precio").value(18000f));
         }catch (Exception ex) {
 
         }
