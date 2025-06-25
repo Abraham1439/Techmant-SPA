@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import com.TechMant.usuario.model.Usuario;
 import com.TechMant.usuario.repository.UsuarioRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class UsuarioService {
 
     @Autowired
