@@ -40,6 +40,11 @@ public class Resena {
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Schema(description = "Fecha en la que se realizó la resena", example = "24/06/2025")
     private Date fechaCreacion; // Fecha de creación de la resena
+
+
+    //llave forania 
+    @Column(nullable = false) 
+    private Long idUsuario;   
 }
 
 

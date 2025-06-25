@@ -51,6 +51,7 @@ public class ResenaControllerTest {
         resena.setComentario("Muy buen servicio");
         resena.setCalificacion(5);
         resena.setFechaCreacion(fecha);
+        resena.setIdUsuario(100L); // Campo agregado
     }
 
     @Test
@@ -60,7 +61,7 @@ public class ResenaControllerTest {
         mockMvc.perform(post("/api/v1/resena")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(resena)))
-                .andExpect(status().isOk())  //Devuelve 200 OK
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"))
                 .andExpect(jsonPath("$.calificacion").value(5));
     }
@@ -86,8 +87,6 @@ public class ResenaControllerTest {
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"));
     }
 
-
-
     @Test
     void modificarResena_validaYActualiza() throws Exception {
         Resena resenaActualizada = new Resena();
@@ -95,6 +94,7 @@ public class ResenaControllerTest {
         resenaActualizada.setComentario("Servicio actualizado");
         resenaActualizada.setCalificacion(4);
         resenaActualizada.setFechaCreacion(resena.getFechaCreacion());
+        resenaActualizada.setIdUsuario(100L); // Campo agregado
 
         when(resenaService.actualizarResena(anyLong(), any(Resena.class)))
                 .thenReturn(resenaActualizada);
@@ -112,7 +112,7 @@ public class ResenaControllerTest {
         doNothing().when(resenaService).eliminarResena(1L);
 
         mockMvc.perform(delete("/api/v1/resena/1"))
-                .andExpect(status().isOk())  //devuelve 200 OK
+                .andExpect(status().isOk())
                 .andExpect(content().string("Resena con ID 1 eliminada correctamente."));
     }
 }

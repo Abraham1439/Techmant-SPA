@@ -31,7 +31,7 @@ import com.techmant.Gestion_resena.repository.ResenaRepository;
 @ExtendWith(MockitoExtension.class)
 public class ResenaServiceTest {
 
-    @Mock
+      @Mock
     private ResenaRepository resenaRepository;
 
     @InjectMocks
@@ -39,11 +39,11 @@ public class ResenaServiceTest {
 
     private Resena resena;
 
-  @BeforeEach
+    @BeforeEach
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         Date fecha = new SimpleDateFormat("dd/MM/yyyy").parse("24/06/2025");
-        resena = new Resena(1L, "Buen servicio", 5, fecha);
+        resena = new Resena(1L, "Buen servicio", 5, fecha, 100L);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class ResenaServiceTest {
         when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
 
         Date nuevaFecha = new Date();
-        Resena nueva = new Resena(null, "Actualizada", 4, nuevaFecha);
+        Resena nueva = new Resena(null, "Actualizada", 4, nuevaFecha, 100L);
 
         Resena resultado = resenaService.actualizarResena(1L, nueva);
 
@@ -109,7 +109,7 @@ public class ResenaServiceTest {
     void actualizarResena_noExistente_lanzaExcepcion() {
         when(resenaRepository.existsById(99L)).thenReturn(false);
 
-        Resena nueva = new Resena(null, "Intento fallido", 3, new Date());
+        Resena nueva = new Resena(null, "Intento fallido", 3, new Date(), 101L);
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
             resenaService.actualizarResena(99L, nueva);
