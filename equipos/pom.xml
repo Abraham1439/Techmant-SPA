@@ -71,7 +71,7 @@
     <scope>test</scope>
 </dependency>
 
-<!-- Para soporte con Java 8 fechas si lo necesitas -->
+<!-- Para soporte con Java 8 fechas -->
 <dependency>
     <groupId>com.fasterxml.jackson.datatype</groupId>
     <artifactId>jackson-datatype-jsr310</artifactId>
