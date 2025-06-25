@@ -5,32 +5,41 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.ticket.client.UsuarioClient;
 import com.example.ticket.dto.UsuarioDTO;
 import com.example.ticket.model.Ticket;
 import com.example.ticket.services.TicketService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/v1/tickets")
+@Tag(name = "Tickets", description = "API para la gestión de tickets de soporte")
 public class TicketController {
+    
     @Autowired
     private TicketService ticketService;
 
     @Autowired
     private UsuarioClient usuarioClient;
 
-    // Crear un nuevo ticket
+    @Operation(summary = "Crear un nuevo ticket", description = "Crea un nuevo ticket de soporte")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Ticket creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos"),
+        @ApiResponse(responseCode = "403", description = "Usuario no autorizado para crear tickets")
+    })
     @PostMapping
-    public ResponseEntity<?> createTicket(@RequestBody Ticket ticket) {
+    public ResponseEntity<?> createTicket(
+            @RequestBody Ticket ticket) {
         // Validar ID de usuario
         if (ticket.getUsuarioId() == null) {
             return ResponseEntity.badRequest()
@@ -52,15 +61,21 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketGuardado);
     }
 
-    // Obtener todos los tickets
+    @Operation(summary = "Obtener todos los tickets", description = "Retorna una lista de todos los tickets existentes")
+    @ApiResponse(responseCode = "200", description = "Lista de tickets obtenida exitosamente")
     @GetMapping
     public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
         return ResponseEntity.ok(ticketService.obtenerTodosLosTickets());
     }
 
-    // Obtener un ticket por ID
+    @Operation(summary = "Obtener un ticket por ID", description = "Retorna un ticket específico según su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ticket encontrado"),
+        @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
+    public ResponseEntity<Ticket> obtenerTicketPorId(
+            @PathVariable Long id) {
         try {
             Ticket ticket = ticketService.obtenerTicketPorId(id);
             return ResponseEntity.ok(ticket);
@@ -69,16 +84,30 @@ public class TicketController {
         }
     }
 
-    // Actualizar un ticket por ID
+    @Operation(summary = "Actualizar un ticket", description = "Actualiza los datos de un ticket existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ticket actualizado exitosamente",
+                   content = @Content(schema = @Schema(implementation = Ticket.class))),
+        @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<Ticket> actualizarTicket(@PathVariable Long id, @RequestBody Ticket ticket) {
+    public ResponseEntity<Ticket> actualizarTicket(
+            
+            @PathVariable Long id, 
+           
+            @RequestBody Ticket ticket) {
         Ticket actualizado = ticketService.actualizarTicket(id, ticket); // Lanza excepción si no existe
         return ResponseEntity.ok(actualizado);
     }
 
-    // Eliminar un ticket por ID
+    @Operation(summary = "Eliminar un ticket", description = "Elimina un ticket existente por su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ticket eliminado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Ticket no encontrado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarTicket(@PathVariable Long id) {
+    public ResponseEntity<String> eliminarTicket(
+            @PathVariable Long id) {
         ticketService.eliminarTicket(id); // Lanza excepción si no existe
         return ResponseEntity.ok("Ticket con ID " + id + " eliminado correctamente.");
     }
