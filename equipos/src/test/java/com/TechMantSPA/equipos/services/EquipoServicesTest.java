@@ -13,11 +13,13 @@ import com.TechMantSPA.equipos.repository.EquiposRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-class EquipoServicesTest {
+import org.mockito.junit.jupiter.MockitoExtension;
+@ExtendWith(MockitoExtension.class)
+public class EquipoServicesTest {
 
     @Mock
     private EquiposRepository equipoRepository;
