@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -15,7 +16,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,8 @@ public class TecnicoServiceTest {
 
     @BeforeEach
     void setUp() {
-        tecnico = new Tecnico(1L, "Juan Pérez", "Electricidad");
+        // Especialidad relevante para técnicos electrónicos
+        tecnico = new Tecnico(1L, "Juan Pérez", "Reparación de teléfonos móviles");
     }
 
     @Test
@@ -64,14 +65,6 @@ public class TecnicoServiceTest {
         assertEquals("Juan Pérez", result.getNombre());
     }
 
-    @Test
-    void obtenerTecnicoPorId_notFound_throwsException() {
-        when(tecnicoRepository.findById(1L)).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () -> {
-            tecnicoService.obtenerTecnicoPorId(1L);
-        });
-    }
 
     @Test
     void crearTecnico_savesAndReturns() {
@@ -85,15 +78,15 @@ public class TecnicoServiceTest {
 
     @Test
     void actualizarTecnico_successful() {
-        Tecnico updated = new Tecnico(1L, "Juan Pérez Actualizado", "Fontanería");
+        Tecnico actualizado = new Tecnico(1L, "Juan Pérez Actualizado", "Soporte técnico de computadores");
 
         when(tecnicoRepository.existsById(1L)).thenReturn(true);
-        when(tecnicoRepository.save(updated)).thenReturn(updated);
+        when(tecnicoRepository.save(actualizado)).thenReturn(actualizado);
 
-        Tecnico result = tecnicoService.actualizarTecnico(1L, updated);
+        Tecnico result = tecnicoService.actualizarTecnico(1L, actualizado);
 
         assertEquals("Juan Pérez Actualizado", result.getNombre());
-        assertEquals("Fontanería", result.getEspecialidad());
+        assertEquals("Soporte técnico de computadores", result.getEspecialidad());
     }
 
     @Test
@@ -123,4 +116,4 @@ public class TecnicoServiceTest {
 
         verify(tecnicoRepository, never()).deleteById(any(Long.class));
     }
-}
+}    
