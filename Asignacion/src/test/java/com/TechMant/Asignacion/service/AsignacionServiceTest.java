@@ -34,7 +34,7 @@ public class AsignacionServiceTest {
 
     @Test
     void saveAsignacion_deberiaGuardarAsignacionSiTecnicoExiste() {
-        // Arrange
+        
         Asignacion asignacion = new Asignacion(1L, "Juan Pérez", "Reparación", 5L);
         Map<String, Object> tecnicoMock = new HashMap<>();
 
