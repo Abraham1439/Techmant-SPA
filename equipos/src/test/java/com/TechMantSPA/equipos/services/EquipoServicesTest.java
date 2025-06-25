@@ -111,17 +111,18 @@ class EquipoServicesTest {
     }
 
     @Test
-    void deleteEquipo_existingId_deletesEquipo() {
-        Long id = 1L;
-        Equipos equipo = new Equipos(id, "Laptop", "Dell", "123ABC", "Descripción", 1L);
+void deleteEquipo_existingId_deletesEquipo() {
+    Long equipoId = 1L;
 
-        when(equipoRepository.findById(id)).thenReturn(Optional.of(equipo));
-        doNothing().when(equipoRepository).deleteById(id);
+    // Simula que el equipo con ID 1 sí existe
+    when(equipoRepository.existsById(equipoId)).thenReturn(true);
 
-        equipoServices.deleteEquipo(id);
+    // Llamada al método que queremos testear
+    equipoServices.deleteEquipo(equipoId);
 
-        verify(equipoRepository, times(1)).deleteById(id);
-    }
+    // Verifica que se llamó a deleteById
+    verify(equipoRepository).deleteById(equipoId);
+}
 
     @Test
     void deleteEquipo_notExistingId_doesNothing() {
