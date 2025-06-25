@@ -4,8 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; // para post, get, put, delete, etc.
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;    // para status(), jsonPath(), content(), etc.
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;    
 
 import org.springframework.http.MediaType;  
 

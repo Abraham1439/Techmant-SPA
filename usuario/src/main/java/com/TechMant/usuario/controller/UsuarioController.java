@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.TechMant.usuario.client.RolServiceClient;
 import com.TechMant.usuario.dto.RolDTO;
 import com.TechMant.usuario.model.Usuario;
-
 import com.TechMant.usuario.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
 
-
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
+@Tag(name = "Usuarios", description = "Operaciones relacionadas con la gestión de usuarios del sistema")
 public class UsuarioController {
 
     @Autowired
@@ -33,9 +36,12 @@ public class UsuarioController {
     @Autowired
     private RolServiceClient rolServiceClient;
     
-    
-
-    // ENDPOINT para traer a todos los usuarios
+    @Operation(summary = "Obtener todos los usuarios", 
+              description = "Retorna una lista de todos los usuarios registrados en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
+        @ApiResponse(responseCode = "204", description = "No hay usuarios registrados")
+    })
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
@@ -45,7 +51,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarios);
     }
 
-    // ENDPOINT para traer a un usuario pro ID
+    @Operation(summary = "Obtener un usuario por ID", 
+              description = "Retorna un usuario específico según su ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUserById(@PathVariable Long id){
         Usuario usuario = usuarioService.getUsuarioById(id);
@@ -55,7 +66,12 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    // ENDPOINT para traer a los usuarios por rol
+    @Operation(summary = "Obtener usuarios por rol", 
+              description = "Retorna una lista de usuarios según su rol")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
+        @ApiResponse(responseCode = "204", description = "No hay usuarios con el rol especificado")
+    })
     @GetMapping("/rol/{id}")
     public ResponseEntity<List<Usuario>> getAllUsuariosByRol(@PathVariable Integer id){
         List<Usuario> usuarios = usuarioService.getAllUsuariosByRol(id);
@@ -64,7 +80,14 @@ public class UsuarioController {
         }
         return ResponseEntity.ok(usuarios);
     }
-    // ENDPOINT para crear un nuevo usuario
+
+    @Operation(summary = "Crear un nuevo usuario", 
+              description = "Crea un nuevo usuario en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "403", description = "No tiene permisos para crear usuarios"),
+        @ApiResponse(responseCode = "400", description = "Error en la creación del usuario")
+    })
     @PostMapping
     public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario, @RequestParam Integer idRolSolicitante) {
         // Validar si quien intenta crear el usuario tiene idRol = 1
@@ -80,15 +103,24 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
-
-    // ENDPOINT para actualizar un usuario existente
+    @Operation(summary = "Actualizar un usuario existente", 
+              description = "Actualiza un usuario específico en el sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario){
         Usuario updatedUsuario = usuarioService.updateUsuario(id, usuario);
         return ResponseEntity.ok(updatedUsuario);
     }
 
-    // ENDPOINT para eliminar un usuario
+    @Operation(summary = "Eliminar un usuario", 
+              description = "Elimina un usuario específico del sistema")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Long id){
         usuarioService.deleteUsuario(id);
