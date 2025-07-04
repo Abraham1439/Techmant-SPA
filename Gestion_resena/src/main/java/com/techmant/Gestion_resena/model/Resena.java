@@ -30,7 +30,7 @@ public class Resena {
 
      @Column(nullable = false, length = 1000)
     @Schema(description = "Contenido de la resena", example = "Excelente servicio, lo recomiendo.")
-    private String Comentario; // Contenido de la resena
+    private String comentario; // Contenido de la resena
 
     @Column(nullable = false)
     @Schema(description = "Calificación de la resena (1 a 5)", example = "5")
@@ -43,6 +43,7 @@ public class Resena {
 
 
     //llave forania 
+    @Schema(description = "ID único del usuario", example = "1")
     @Column(nullable = false) 
     private Long idUsuario;   
 }
