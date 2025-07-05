@@ -32,7 +32,7 @@ public class Agendamiento {
     @Column(name = "estado", nullable = false)
     private String estado;
 
-     @Schema(description = "Fecha programada para la cita", example = "2025/07/08")
+    @Schema(description = "Fecha programada para la cita", example = "2025/07/08")
     @Column(name = "fechaCita", nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy")
     private Date fechaCita; 
