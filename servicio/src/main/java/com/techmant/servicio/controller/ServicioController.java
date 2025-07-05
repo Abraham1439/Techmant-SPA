@@ -17,20 +17,28 @@ import com.techmant.servicio.model.Servicio;
 import com.techmant.servicio.service.ServicioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("api/v1/servicios")
-@Tag(name = "Servicios", description = "API para gestionar servicios ofrecidos")
+@Tag(name = "Servicios", description = "API para gestionar servicios ofrecidos por TechMant")
 public class ServicioController {
 
     @Autowired
     private ServicioService servicioService;
 
-    @Operation(summary = "Obtener todos los servicios", description = "Devuelve una lista con todos los servicios registrados")
-    @ApiResponse(responseCode = "200", description = "Lista de servicios obtenida correctamente")
+
+    //Se actualizo esto 
+    @Operation(summary = "Obtener todos los servicios", description = "Devuelve una lista con todos los servicios registrados en la base de datos.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lista de servicios obtenida correctamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Servicio.class))),
+    @ApiResponse(responseCode = "204", description = "No se encontraron servicios registrados")
+    })
+
     //Enpoint para obtener todos los servicios 
     @GetMapping
     public ResponseEntity<List<Servicio>> listarServicios() {
@@ -44,10 +52,13 @@ public class ServicioController {
         return ResponseEntity.ok(servicios);
     }
 
-    @Operation(summary = "Obtener servicio por ID", description = "Busca un servicio específico usando su ID")
+
+
+    //Se agrego esto 
+    @Operation(summary = "Obtener un servicio por su ID", description = "Busca y devuelve un servicio específico usando su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Servicio encontrado"),
-        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    @ApiResponse(responseCode = "200", description = "Servicio encontrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Servicio.class))),
+    @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
     })
 
     //Endpoint para buscar un servicio por su id 
@@ -62,10 +73,11 @@ public class ServicioController {
     }
 
 
-    @Operation(summary = "Crear un nuevo servicio", description = "Registra un nuevo servicio en la base de datos")
+    //se agrego esto 
+    @Operation(summary = "Crear un nuevo servicio", description = "Registra un nuevo servicio si la categoría indicada existe")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Servicio creado exitosamente"),
-        @ApiResponse(responseCode = "404", description = "Solicitud inválida")
+    @ApiResponse(responseCode = "201", description = "Servicio creado exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Servicio.class))),
+    @ApiResponse(responseCode = "404", description = "Categoría no encontrada, no se puede crear el servicio")
     })
     //Endpoint para crear un servicio nuevo(con conexion)
     @PostMapping
@@ -79,10 +91,12 @@ public class ServicioController {
 
     }
 
-     @Operation(summary = "Actualizar servicio por ID", description = "Actualiza los datos de un servicio existente por su ID")
+
+    //se agrego esto 
+    @Operation(summary = "Actualizar un servicio existente", description = "Modifica los datos de un servicio ya registrado por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Servicio actualizado correctamente"),
-        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    @ApiResponse(responseCode = "200", description = "Servicio actualizado correctamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Servicio.class))),
+    @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
     })
 
     //Endpoint para actualiazar un servicio por su ID 
@@ -105,10 +119,13 @@ public class ServicioController {
         }
     }
 
-    @Operation(summary = "Eliminar servicio por ID", description = "Elimina un servicio específico usando su ID")
+
+
+    //Se agrego esto 
+    @Operation(summary = "Eliminar un servicio por su ID", description = "Elimina un servicio registrado en la base de datos")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Servicio eliminado exitosamente"),
-        @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
+    @ApiResponse(responseCode = "204", description = "Servicio eliminado exitosamente"),
+    @ApiResponse(responseCode = "404", description = "Servicio no encontrado")
     })
 
     //Endpoint para eliminar un servicio por su ID 
