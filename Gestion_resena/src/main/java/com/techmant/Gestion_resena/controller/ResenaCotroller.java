@@ -1,5 +1,6 @@
 package com.techmant.Gestion_resena.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,13 @@ public class ResenaCotroller {
         @ApiResponse(responseCode = "201", description = "Reseña creada exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
+    
     @PostMapping
     public ResponseEntity<Resena> crearResena(@RequestBody Resena resena) {
-        Resena nueva = resenaService.crearResena(resena);
-        return ResponseEntity.ok(nueva);
-    }
+    Resena nueva = resenaService.crearResena(resena);
+    URI location = URI.create("/api/v1/resenas/" + nueva.getIdResena());
+    return ResponseEntity.created(location).body(nueva);
+}
 
     @Operation(
         summary = "Obtener todas las reseñas",

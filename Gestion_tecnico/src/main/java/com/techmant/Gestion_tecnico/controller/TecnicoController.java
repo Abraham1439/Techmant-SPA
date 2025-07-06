@@ -1,5 +1,6 @@
 package com.techmant.Gestion_tecnico.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ public class TecnicoController {
     })
     @PostMapping
     public ResponseEntity<Tecnico> crearTecnico(@RequestBody Tecnico tecnico) {
-        Tecnico nuevo = tecnicoService.crearTecnico(tecnico);
-        return ResponseEntity.status(201).body(nuevo);
-    }
-
+    Tecnico nuevo = tecnicoService.crearTecnico(tecnico);
+    URI location = URI.create("/api/v1/tecnicos/" + nuevo.getIdTecnico());
+    return ResponseEntity.created(location).body(nuevo);
+}
     @Operation(summary = "Obtener todos los técnicos", description = "Devuelve una lista con todos los técnicos registrados.")
     @ApiResponse(responseCode = "200", description = "Lista de técnicos obtenida correctamente")
     @GetMapping

@@ -1,4 +1,5 @@
 package com.techmant.solicitud.controller;
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +41,11 @@ public class SolicitudController {
 
     @PostMapping
     public ResponseEntity<Solicitud> crearSolicitud(@RequestBody Solicitud solicitud) {
-        Solicitud nuevaSolicitud = solicitudService.crearSolicitud(solicitud);
-        return ResponseEntity.ok(nuevaSolicitud);
-    }
+    Solicitud nuevaSolicitud = solicitudService.crearSolicitud(solicitud);
+    URI location = URI.create("/api/v1/solicitudes/" + nuevaSolicitud.getIdSolicitud());
+    return ResponseEntity.created(location).body(nuevaSolicitud);
+}
+
 
       @Operation(
         summary = "Obtener todas las solicitudes",
@@ -103,6 +106,7 @@ public class SolicitudController {
         @ApiResponse(responseCode = "204", description = "Solicitud eliminada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarSolicitud(@PathVariable Long id) {
