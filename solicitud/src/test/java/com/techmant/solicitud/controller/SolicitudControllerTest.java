@@ -14,6 +14,9 @@ import org.springframework.http.MediaType;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
+import java.util.Date;
+
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,11 +41,11 @@ public class SolicitudControllerTest {
     private Solicitud solicitud;
     private ObjectMapper objectMapper;
 
+  
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        // Asegúrate de usar un tipo de dato válido para la fecha
-        solicitud = new Solicitud(1L, null, "Comentario de prueba", "100.00"); // Cambia null por un valor adecuado
+        solicitud = new Solicitud(1L, new Date(), "Comentario de prueba", 100000);
     }
 
     @Test
@@ -54,21 +57,24 @@ public class SolicitudControllerTest {
                 .content(objectMapper.writeValueAsString(solicitud)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.comentario").value("Comentario de prueba"))
-                .andExpect(jsonPath("$.total").value("100.00"));
+                .andExpect(jsonPath("$.total").value(100000));
     }
 
     @Test
     void obtenerTodasLasSolicitudes_returnsList() throws Exception {
         List<Solicitud> solicitudes = Arrays.asList(
-                new Solicitud(1L, null, "Comentario 1", "50.00"),
-                new Solicitud(2L, null, "Comentario 2", "75.00"));
+                new Solicitud(1L, new Date(), "Comentario 1", 50000),
+                new Solicitud(2L, new Date(), "Comentario 2", 75000)
+        );
 
         when(solicitudService.obtenerTodasSolicitudes()).thenReturn(solicitudes);
 
         mockMvc.perform(get("/api/v1/solicitudes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].comentario").value("Comentario 1"))
-                .andExpect(jsonPath("$[1].comentario").value("Comentario 2"));
+                .andExpect(jsonPath("$[0].total").value(50000))
+                .andExpect(jsonPath("$[1].comentario").value("Comentario 2"))
+                .andExpect(jsonPath("$[1].total").value(75000));
     }
 
     @Test
@@ -77,24 +83,23 @@ public class SolicitudControllerTest {
 
         mockMvc.perform(get("/api/v1/solicitudes/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idSolicitud").value(1L))
-                .andExpect(jsonPath("$.comentario").value("Comentario de prueba"));
+                .andExpect(jsonPath("$.idSolicitud").value(1))
+                .andExpect(jsonPath("$.comentario").value("Comentario de prueba"))
+                .andExpect(jsonPath("$.total").value(100000));
     }
-
-
 
     @Test
     void actualizarSolicitud_successfully() throws Exception {
-        Solicitud solicitudActualizada = new Solicitud(1L, null, "Comentario actualizado", "150.00");
+        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", 150000);
 
-        when(solicitudService.actualizarSolicitud(1L, solicitudActualizada)).thenReturn(solicitudActualizada);
+        when(solicitudService.actualizarSolicitud(eq(1L), any(Solicitud.class))).thenReturn(solicitudActualizada);
 
         mockMvc.perform(put("/api/v1/solicitudes/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(solicitudActualizada)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.comentario").value("Comentario actualizado"))
-                .andExpect(jsonPath("$.total").value("150.00"));
+                .andExpect(jsonPath("$.total").value(150000));
     }
 
     @Test
@@ -104,5 +109,4 @@ public class SolicitudControllerTest {
         mockMvc.perform(delete("/api/v1/solicitudes/1"))
                 .andExpect(status().isNoContent());
     }
-
 }

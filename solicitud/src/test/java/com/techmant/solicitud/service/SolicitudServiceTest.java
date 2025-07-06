@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.techmant.solicitud.model.Solicitud;
@@ -38,11 +37,9 @@ public class SolicitudServiceTest {
 
     private Solicitud solicitud;
 
-    @BeforeEach
+      @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        // Cambiar el tipo de dato a Date para fecha_solicitud
-        solicitud = new Solicitud(1L, new Date(), "Comentario de prueba", "100.00");
+        solicitud = new Solicitud(1L, new Date(), "Comentario de prueba", 100000);
     }
 
     @Test
@@ -53,15 +50,16 @@ public class SolicitudServiceTest {
 
         assertNotNull(nuevaSolicitud);
         assertEquals("Comentario de prueba", nuevaSolicitud.getComentario());
-        assertEquals("100.00", nuevaSolicitud.getTotal());
+        assertEquals(100000, nuevaSolicitud.getTotal());
         verify(solicitudRepository, times(1)).save(solicitud);
     }
 
     @Test
     void obtenerTodasSolicitudes_returnsList() {
         List<Solicitud> solicitudes = Arrays.asList(
-                new Solicitud(1L, new Date(), "Comentario 1", "50.00"),
-                new Solicitud(2L, new Date(), "Comentario 2", "75.00"));
+                new Solicitud(1L, new Date(), "Comentario 1", 50000),
+                new Solicitud(2L, new Date(), "Comentario 2", 75000)
+        );
 
         when(solicitudRepository.findAll()).thenReturn(solicitudes);
 
@@ -96,7 +94,7 @@ public class SolicitudServiceTest {
 
     @Test
     void actualizarSolicitud_successfully() {
-        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", "150.00");
+        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", 150000);
 
         when(solicitudRepository.existsById(1L)).thenReturn(true);
         when(solicitudRepository.save(any(Solicitud.class))).thenReturn(solicitudActualizada);
@@ -105,12 +103,13 @@ public class SolicitudServiceTest {
 
         assertNotNull(resultado);
         assertEquals("Comentario actualizado", resultado.getComentario());
+        assertEquals(150000, resultado.getTotal());
         verify(solicitudRepository, times(1)).save(solicitudActualizada);
     }
 
     @Test
     void actualizarSolicitud_notFound() {
-        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", "150.00");
+        Solicitud solicitudActualizada = new Solicitud(1L, new Date(), "Comentario actualizado", 150000);
 
         when(solicitudRepository.existsById(1L)).thenReturn(false);
 
