@@ -1,29 +1,32 @@
 package com.TechMant.Asignacion.config;
 
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
+//import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.TechMant.Asignacion.model.Asignacion;
-import com.TechMant.Asignacion.repository.AsignacionRepository;
+//import com.TechMant.Asignacion.repository.AsignacionRepository;
+import com.TechMant.Asignacion.service.AsignacionService;
 
 @Configuration
 public class LoadDataBase {
 
-    @Bean
-    CommandLineRunner initDataBase(AsignacionRepository asigRepo) {
+    CommandLineRunner initDataBase(AsignacionService asignacionService) {
         return args -> {
-            //Si no hay registros en las tablas inserto los datos
-            if(asigRepo.count() == 0) {
-                //cargar las Asignaciones
-                Asignacion tec =    new Asignacion();
-                tec.setNombreAsignado("Juan López");
-                tec.setNombreServicio("Reparacion de harware");
-                tec.setIdTecnico((long)1);
-                asigRepo.save(tec);
-            }
-            else {
-                System.out.println("Datos ya existentes. NO se cargaron datos nuevos");
+            if (asignacionService.obtenerAsignaciones().isEmpty()) {
+                try {
+                    Asignacion asignacion = new Asignacion();
+                    asignacion.setNombreAsignado("Juan López");
+                    asignacion.setNombreServicio("Reparación de hardware");
+                    asignacion.setIdTecnico(1L); // debe existir en Gestion_tecnico
+
+                    asignacionService.saveAsignacion(asignacion);
+                    System.out.println("Asignación precargada correctamente.");
+                } catch (Exception e) {
+                    System.err.println("Error al precargar asignación: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Datos ya existentes. No se cargaron datos nuevos.");
             }
         };
     }
