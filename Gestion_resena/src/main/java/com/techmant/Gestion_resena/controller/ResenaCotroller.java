@@ -31,10 +31,13 @@ public class ResenaCotroller {
     private ResenaService resenaService;
    
 
-    @Operation(summary = "Crear una nueva resena", description = "Registra una nueva resena en la base de datos")
+    @Operation(
+        summary = "Crear una nueva reseña",
+        description = "Registra una nueva reseña en la base de datos."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Resena creada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud invalida")
+        @ApiResponse(responseCode = "201", description = "Reseña creada exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
     @PostMapping
     public ResponseEntity<Resena> crearResena(@RequestBody Resena resena) {
@@ -42,18 +45,24 @@ public class ResenaCotroller {
         return ResponseEntity.ok(nueva);
     }
 
-    @Operation(summary = "Obtener todas las resenas", description = "Devuelve una lista con todas las resenas registradas")
-    @ApiResponse(responseCode = "200", description = "Lista de resenas obtenida correctamente")
+    @Operation(
+        summary = "Obtener todas las reseñas",
+        description = "Devuelve una lista con todas las reseñas registradas."
+    )
+    @ApiResponse(responseCode = "200", description = "Lista de reseñas obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Resena>> obtenerTodasLasResenas() {
         List<Resena> resenas = resenaService.obtenerTodasLasResenas();
         return ResponseEntity.ok(resenas);
     }
 
-    @Operation(summary = "Obtener resena por ID", description = "Busca una resena especifica usando su ID")
+   @Operation(
+        summary = "Obtener reseña por ID",
+        description = "Busca una reseña específica usando su ID."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Resena encontrada"),
-        @ApiResponse(responseCode = "404", description = "Resena no encontrada")
+        @ApiResponse(responseCode = "200", description = "Reseña encontrada"),
+        @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @GetMapping("/{id}")
     public ResponseEntity<Resena> obtenerResenaPorId(@PathVariable Long id) {
@@ -61,10 +70,14 @@ public class ResenaCotroller {
         return ResponseEntity.ok(resena);
     }
 
-    @Operation(summary = "Actualizar resena", description = "Actualiza los datos de una resena existente por ID")
+    @Operation(
+        summary = "Actualizar reseña",
+        description = "Actualiza los datos de una reseña existente por ID."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Resena actualizada correctamente"),
-        @ApiResponse(responseCode = "404", description = "Resena no encontrada")
+        @ApiResponse(responseCode = "200", description = "Reseña actualizada correctamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
+        @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Resena> actualizarResena(@PathVariable Long id, @RequestBody Resena resena) {
@@ -75,11 +88,15 @@ public class ResenaCotroller {
         return ResponseEntity.ok(actualizado);
     }
 
-    @Operation(summary = "Eliminar resena", description = "Elimina una resena por su ID")
+    @Operation(
+        summary = "Eliminar reseña",
+        description = "Elimina una reseña por su ID."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Resena eliminada exitosamente"),
-        @ApiResponse(responseCode = "404", description = "Resena no encontrada")
+        @ApiResponse(responseCode = "204", description = "Reseña eliminada exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarResena(@PathVariable Long id) {
         resenaService.eliminarResena(id);
