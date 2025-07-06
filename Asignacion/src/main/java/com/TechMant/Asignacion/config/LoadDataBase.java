@@ -18,10 +18,12 @@ public class LoadDataBase {
                     Asignacion asignacion = new Asignacion();
                     asignacion.setNombreAsignado("Juan López");
                     asignacion.setNombreServicio("Reparación de hardware");
-                    asignacion.setIdTecnico(1L); // debe existir en Gestion_tecnico
+                    asignacion.setIdTecnico(3L); // debe existir en Gestion_tecnico
 
                     asignacionService.saveAsignacion(asignacion);
+
                     System.out.println("Asignación precargada correctamente.");
+
                 } catch (Exception e) {
                     System.err.println("Error al precargar asignación: " + e.getMessage());
                 }

@@ -16,7 +16,11 @@ public class LoadDatabase {
                 tecnicoRepository.save(new Tecnico(null, "Juan López", "Reparación de hardware"));
                 tecnicoRepository.save(new Tecnico(null, "Ana Torres", "Instalación de software"));
                 tecnicoRepository.save(new Tecnico(null, "Pedro Sánchez", "Soporte técnico general"));
+                
                 System.out.println("Datos de técnicos precargados exitosamente.");
+            }
+            else {
+                System.out.println("Datos ya existentes. NO se cargaron datos nuevos");
             }
         };
     }
