@@ -78,7 +78,7 @@ public class AsignacionServiceTest {
 
     
         assertThat(resultado).isNotNull();
-        assertThat(resultado.getNombreCaso()).isEqualTo("Diagnóstico");
+        assertThat(resultado.getNombreAsignado()).isEqualTo("Diagnóstico");
     }
 
 

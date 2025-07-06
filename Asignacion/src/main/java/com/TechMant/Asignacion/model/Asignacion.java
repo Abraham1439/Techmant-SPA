@@ -25,12 +25,12 @@ public class Asignacion {
     private Long idAsignacion;
 
     @Column(name = "nombre_asignado") //nombre del tecnico al que fue asignado 
-    @Schema(description = "Nombre del técnico asignado al caso", example = "Carlos Pérez")
+    @Schema(description = "Nombre del técnico asignado al caso", example = "Juan López")
     private String nombreAsignado;
 
     @Column(name = "nombre_caso") //tipo de caso que se le asigno
-    @Schema(description = "Tipo o nombre del caso asignado", example = "Reparación de impresora")
-    private String nombreCaso;
+    @Schema(description = "Nombre del servicio asignado", example = "Reparación de Laptop")
+    private String nombreServicio;
 
     //llaves foraneas
     @Column(nullable = false)
