@@ -43,7 +43,6 @@ public class Resena {
 
 
     //llave forania 
-    @Schema(description = "ID único del usuario", example = "1")
     @Column(nullable = false) 
     @Schema(description = "ID único de la usuario", example = "1")
     private Long idUsuario;   
