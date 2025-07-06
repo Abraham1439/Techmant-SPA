@@ -30,7 +30,7 @@ public class TecnicoController {
     @Autowired
     private TecnicoService tecnicoService;
 
-   @Operation(summary = "Crear un nuevo técnico", description = "Registra un nuevo técnico en la base de datos")
+   @Operation(summary = "Crear un nuevo técnico", description = "Registra un nuevo técnico en la base de datos.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Técnico creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud inválida")
@@ -41,16 +41,14 @@ public class TecnicoController {
         return ResponseEntity.status(201).body(nuevo);
     }
 
-    @Operation(summary = "Obtener todos los técnicos", description = "Devuelve una lista con todos los técnicos registrados")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de técnicos obtenida correctamente")
-    })
+    @Operation(summary = "Obtener todos los técnicos", description = "Devuelve una lista con todos los técnicos registrados.")
+    @ApiResponse(responseCode = "200", description = "Lista de técnicos obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Tecnico>> obtenerTodosLosTecnicos() {
         return ResponseEntity.ok(tecnicoService.obtenerTodosLosTecnicos());
     }
 
-    @Operation(summary = "Obtener técnico por ID", description = "Busca un técnico específico usando su ID")
+    @Operation(summary = "Obtener técnico por ID", description = "Busca un técnico específico usando su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Técnico encontrado"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
@@ -66,9 +64,10 @@ public class TecnicoController {
         return ResponseEntity.ok(tecnico);
     }
 
-    @Operation(summary = "Actualizar técnico", description = "Actualiza los datos de un técnico existente por ID")
+    @Operation(summary = "Actualizar técnico", description = "Actualiza los datos de un técnico existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Técnico actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
     @PutMapping("/{id}")
@@ -83,7 +82,7 @@ public class TecnicoController {
         return ResponseEntity.ok(actualizado);
     }
 
-    @Operation(summary = "Eliminar técnico", description = "Elimina un técnico por su ID")
+    @Operation(summary = "Eliminar técnico", description = "Elimina un técnico por su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Técnico eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")

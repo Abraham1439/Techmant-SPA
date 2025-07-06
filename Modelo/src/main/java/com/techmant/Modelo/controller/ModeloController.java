@@ -27,18 +27,24 @@ public class ModeloController {
     @Autowired
     private ModeloService modeloService;
 
-   @Operation(summary = "Crear un nuevo modelo", description = "Registra un nuevo modelo en la base de datos")
+    @Operation(
+        summary = "Crear un nuevo modelo",
+        description = "Registra un nuevo modelo en la base de datos."
+    )
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Modelo creado exitosamente"),
-    @ApiResponse(responseCode = "400", description = "Solicitud inválida")
-})
+        @ApiResponse(responseCode = "201", description = "Modelo creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
     @PostMapping
     public ResponseEntity<Modelo> crearModelo(@RequestBody Modelo modelo) {
         Modelo nuevo = modeloService.crearModelo(modelo);
         return ResponseEntity.ok(nuevo);
     }
 
-    @Operation(summary = "Obtener todos los modelos", description = "Devuelve una lista con todos los modelos registrados")
+        @Operation(
+        summary = "Obtener todos los modelos",
+        description = "Devuelve una lista con todos los modelos registrados."
+    )
     @ApiResponse(responseCode = "200", description = "Lista de modelos obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Modelo>> obtenerTodosLosModelos() {
@@ -46,7 +52,10 @@ public class ModeloController {
         return ResponseEntity.ok(modelos);
     }
 
-    @Operation(summary = "Obtener modelo por ID", description = "Busca un modelo específico usando su ID")
+      @Operation(
+        summary = "Obtener modelo por ID",
+        description = "Busca un modelo específico usando su ID."
+    )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo encontrado"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
@@ -57,22 +66,31 @@ public class ModeloController {
         return ResponseEntity.ok(modelo);
     }
 
-    @Operation(summary = "Actualizar modelo", description = "Actualiza los datos de un modelo existente por ID")
+    @Operation(
+        summary = "Actualizar modelo",
+        description = "Actualiza los datos de un modelo existente por ID."
+    )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
+
     @PutMapping("/{id}")
     public ResponseEntity<Modelo> actualizarModelo(@PathVariable Long id, @RequestBody Modelo modelo) {
         Modelo actualizado = modeloService.actualizarModelo(id, modelo);
         return ResponseEntity.ok(actualizado);
     }
 
-    @Operation(summary = "Eliminar modelo", description = "Elimina un modelo por su ID")
+    @Operation(
+        summary = "Eliminar modelo",
+        description = "Elimina un modelo por su ID."
+    )
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Modelo eliminado exitosamente"),
+        @ApiResponse(responseCode = "204", description = "Modelo eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarModelo(@PathVariable Long id) {
         modeloService.eliminarModelo(id);
