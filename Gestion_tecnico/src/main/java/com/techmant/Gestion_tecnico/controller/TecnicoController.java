@@ -53,8 +53,8 @@ public class TecnicoController {
 
     @Operation(summary = "Obtener técnico por ID", description = "Busca un técnico específico usando su ID")
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Técnico encontrado"),
-    @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
+        @ApiResponse(responseCode = "200", description = "Técnico encontrado"),
+        @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
 
     // Obtener un técnico por ID
@@ -69,7 +69,6 @@ public class TecnicoController {
         @ApiResponse(responseCode = "200", description = "Técnico actualizado correctamente"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
-
     // Actualizar un técnico por ID
     @PutMapping("/{id}")
     public ResponseEntity<Tecnico> actualizarTecnico(@PathVariable Long id, @RequestBody Tecnico tecnico) {
@@ -82,10 +81,9 @@ public class TecnicoController {
 
      @Operation(summary = "Eliminar técnico", description = "Elimina un técnico por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Técnico eliminado exitosamente"),
+        @ApiResponse(responseCode = "204", description = "Técnico eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
-
     // Eliminar un técnico por ID
     @DeleteMapping("/{id}")
     public ResponseEntity<String> eliminarTecnico(@PathVariable Long id) {
