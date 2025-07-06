@@ -16,12 +16,28 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techmant.agendamiento.model.Agendamiento;
 import com.techmant.agendamiento.service.AgendamientoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("api/v1/agendamiento")
+@Tag(name = "Agendamientos", description = "API para gestionar los agendamientos de las solicitudes")
 public class AgendamientoController {
 
     @Autowired
     private AgendamientoService agendamientoService;
+
+
+    //se agrego esto nuevo
+    @Operation(summary = "Obtener todos los agendamientos", description = "Devuelve una lista con todos los agendamientos registrados")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lista de agendamientos obtenida correctamente", content = @Content(schema = @Schema(implementation = Agendamiento.class))),
+    @ApiResponse(responseCode = "204", description = "No hay agendamientos registradas") // se agrego esto nuevo 
+    })
 
     //Endpoint para obtener todas las agendas 
     @GetMapping
@@ -37,7 +53,14 @@ public class AgendamientoController {
     }
 
 
-     //Endpoint para agregar una agenda (Con conexion)
+    //se agrego esto nuevo
+    @Operation(summary = "Agregar un nuevo agendamiento", description = "Registra un nuevo agendamiento asociado a una solicitud")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Agendamiento creado exitosamente"),
+    @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
+    })
+
+    //Endpoint para agregar una agenda (Con conexion)
     @PostMapping
     public ResponseEntity<?> agregarAgendamiento(@RequestBody Agendamiento nuevo) {
         try {
@@ -48,6 +71,13 @@ public class AgendamientoController {
         }
     }
 
+
+    //se agrego esto nuevo
+    @Operation(summary = "Buscar agendamiento por ID", description = "Obtiene un agendamiento específico según su ID")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Agendamiento encontrado"),
+    @ApiResponse(responseCode = "404", description = "Agendamiento no encontrado")
+    })
 
     //Endpoint para buscar una agenda por su ID 
     @GetMapping("/{id}")
@@ -61,6 +91,13 @@ public class AgendamientoController {
     }
 
 
+    //se agrego esto nuevo
+    @Operation(summary = "Eliminar agendamiento", description = "Elimina un agendamiento existente por su ID")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Agendamiento eliminado exitosamente"),
+    @ApiResponse(responseCode = "404", description = "Agendamiento no encontrado")
+    })
+
     //Endpoint para eliminar una agenda mediante su ID 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarAgendamiento(@PathVariable Long id) {
@@ -73,6 +110,13 @@ public class AgendamientoController {
         }
     }
 
+
+    //se agrego esto nuevo
+    @Operation(summary = "Actualizar agendamiento por ID", description = "Actualiza los datos de un agendamiento existente")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Agendamiento actualizado correctamente"),
+    @ApiResponse(responseCode = "404", description = "Agendamiento no encontrado")
+    })
 
     
     //Endpoint para actualizar una agenda mediente su ID (Si es que se necesita):)

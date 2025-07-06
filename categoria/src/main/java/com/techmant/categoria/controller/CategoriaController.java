@@ -22,18 +22,20 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("api/v1/categoria")
-
+@Tag(name = "Categoria", description = "API para gestionar las categorias de los servicios")
 public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
 
-    @Operation(summary = "obtener uan lista de todas las categorias de los servicios")
+    @Operation(summary = "Obtener una lista de todas las categorias de los servicios", description = "Retorna una lista de todas las categorias registradas")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Todas las listas de categorias encontradas", content = @Content(schema = @Schema(implementation = Categoria.class)))
+    @ApiResponse(responseCode = "200", description = "Todas las listas de categorias encontradas", content = @Content(schema = @Schema(implementation = Categoria.class))),
+    @ApiResponse(responseCode = "204", description = "No hay categorias registradas") // se agrego esto nuevo 
     })
     
     //Metodo para obtener todas las categorias del servicio
@@ -50,6 +52,14 @@ public class CategoriaController {
         return ResponseEntity.ok(categorias);
     }
 
+
+    //se agrego esto nuevo
+    @Operation(summary = "Agregar una nueva categoria", description = "Registra una nueva categoria en la base de datos")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Categoria creada exitosamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Categoria.class))),
+    @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
+
     //metodo para agregar categorias
     @PostMapping
     public ResponseEntity<Categoria> agregarCategoria(@RequestBody Categoria cat) {
@@ -58,6 +68,14 @@ public class CategoriaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoria2);
     }
 
+
+
+    //se agrego esto nuevo
+    @Operation(summary = "Buscar categoria por ID", description = "Busca una categoria especifica mediante su ID")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Categoria encontrada", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Categoria.class))),
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
+    })
 
     //Metodo para buscar por su id 
     @GetMapping("/{id}")
@@ -72,6 +90,15 @@ public class CategoriaController {
 
     }
 
+
+
+    //se agrego esto nuevo
+    @Operation(summary = "Eliminar categoria por ID", description = "Elimina una categoria especifica mediante su ID")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Categoria eliminada correctamente"),
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
+    })
+
     //Metodo para eliminar una categoria en espesifico (por su ID)
     @DeleteMapping("/{id}")
     public  ResponseEntity<?> eliminarCategoria(@PathVariable long id) {
@@ -82,6 +109,16 @@ public class CategoriaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+
+    //se agrego esto nuevo
+    @Operation(summary = "Modificar una categoria", description = "Actualiza los datos de una categoria existente mediante su ID")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Categoria actualizada correctamente", content = @Content(mediaType = "application/json", schema = @Schema(implementation = Categoria.class))),
+    @ApiResponse(responseCode = "404", description = "Categoria no encontrada")
+    })
 
     //Metodo para modificar una categoria 
     @PutMapping("/{id}")

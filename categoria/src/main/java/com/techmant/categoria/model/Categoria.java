@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class Categoria {
 
     @Id
-    @Schema(description = "ID unico para los tipos de categorias")
+    @Schema(description = "ID unico para los tipos de categorias", example = "1")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCategoria;
 

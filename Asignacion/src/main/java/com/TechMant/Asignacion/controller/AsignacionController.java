@@ -29,9 +29,14 @@ public class AsignacionController {
     @Autowired
     private AsignacionService asignacionService;
 
+
+    //Se actualizo esto
     @Operation(summary = "Listar todas las asignaciones", description = "Obtiene una lista de todas las asignaciones registradas")
-    @ApiResponse(responseCode = "200", description = "Lista de asignaciones obtenida correctamente")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Lista de asignaciones obtenida correctamente"),
     @ApiResponse(responseCode = "204", description = "No hay asignaciones registradas")
+    })
+    
     //Enpoint para obtener todos las asignaciones
     @GetMapping
     public ResponseEntity<List<Asignacion>> listarAsignaciones() {
@@ -44,11 +49,14 @@ public class AsignacionController {
         return ResponseEntity.ok(asignaciones);
     }
 
+
+    //Se actualizo esto
     @Operation(summary = "Obtener asignación por ID", description = "Busca una asignación específica por su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Asignación encontrada"),
-        @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
+    @ApiResponse(responseCode = "200", description = "Asignación encontrada"),
+    @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
     })
+
     //Endpoint para buscar una asignacion por su id 
     @GetMapping("/{id}")
     public ResponseEntity<Asignacion> obtenerAsignacionporId(@PathVariable Long id) {
@@ -60,11 +68,14 @@ public class AsignacionController {
         }
     }
 
+
+    //Se actualizo esto
     @Operation(summary = "Crear nueva asignación", description = "Registra una nueva asignación en la base de datos")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Asignación creada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    @ApiResponse(responseCode = "201", description = "Asignación creada exitosamente"),
+    @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
+
     //Endpoint para crear una asignacion nueva(con conexion)
     @PostMapping 
     public ResponseEntity<?> agregarAsignacion(@RequestBody Asignacion nueva) {
@@ -76,11 +87,14 @@ public class AsignacionController {
         }
     }
 
-      @Operation(summary = "Actualizar asignación existente", description = "Modifica una asignación existente por ID")
+
+    //Se actualizo esto
+    @Operation(summary = "Actualizar asignación existente", description = "Modifica una asignación existente por ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Asignación actualizada correctamente"),
-        @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
+    @ApiResponse(responseCode = "200", description = "Asignación actualizada correctamente"),
+    @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
     })
+
     //Endpoint para actualiazar un agendamiento por su ID 
     @PutMapping("/{id}")
     public ResponseEntity<Asignacion> modificarAsignacion(@PathVariable Long id, @RequestBody Asignacion asig) {
@@ -100,11 +114,14 @@ public class AsignacionController {
         }
     }
 
+
+    //Se actualizo esto
     @Operation(summary = "Eliminar asignación por ID", description = "Elimina una asignación específica usando su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Asignación eliminada correctamente"),
-        @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
+    @ApiResponse(responseCode = "204", description = "Asignación eliminada correctamente"),
+    @ApiResponse(responseCode = "404", description = "Asignación no encontrada")
     })
+
     //Endpoint para eliminar un servicio por su ID 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarAsignacionPorId(@PathVariable Long id) {
