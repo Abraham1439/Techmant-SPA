@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.techmant.agendamiento.model.Agendamiento;
 import com.techmant.agendamiento.repository.AgendamientoRepository;
-import com.techmant.agendamiento.websolicitud.SolicitudCat;
+import com.techmant.agendamiento.webusuario.UsuarioCat;
 
 import jakarta.transaction.Transactional;
 
@@ -18,8 +18,10 @@ public class AgendamientoService {
 
     @Autowired
     private AgendamientoRepository agendamientoRepository;
+
     @Autowired
-    private SolicitudCat solicitudCat;
+    private UsuarioCat usuarioCat;
+
 
     //Metodo para obtener todas las agendas 
     public List<Agendamiento> getAgendamientos() {
@@ -31,14 +33,16 @@ public class AgendamientoService {
         return agendamientoRepository.findById(id).orElseThrow(() -> new RuntimeException("Lo sentimos la agenda no pudo ser encontrada."));
     }
 
-     //Metodo para crear una agenda (Con conexion)
+    
+    
+    //Metodo para crear una agenda (Con conexion)
     public Agendamiento agregarAgendamiento (Agendamiento nuevoAgendamiento) {
-        //verificar si la categoria existe 
+        //verificar si el usuario existe 
         //para eso me comunico con el microservicio de categoria 
-        Map<String, Object> solicitud = solicitudCat.obtenerSolicitudPorId(nuevoAgendamiento.getIdSolicitud());
-        if(solicitud == null || solicitud.isEmpty()) {
+        Map<String, Object> usuario = usuarioCat.obtenerUsuarioPorId(nuevoAgendamiento.getIdUsuario());
+        if(usuario == null || usuario.isEmpty()) {
             //si no se consigue la categoria mediante el metodo get del otro microservicio
-            throw new RuntimeException("Solicutud no encontrada. No se puede guardar la agenda");
+            throw new RuntimeException("Usuario no encontrada. No se puede guardar la agenda");
         }
         //si se encuentra la categoria
         return agendamientoRepository.save(nuevoAgendamiento);

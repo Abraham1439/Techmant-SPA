@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.techmant.agendamiento.model.Agendamiento;
 import com.techmant.agendamiento.repository.AgendamientoRepository;
-import com.techmant.agendamiento.websolicitud.SolicitudCat;
+import com.techmant.agendamiento.webusuario.UsuarioCat;
 
 @ExtendWith(MockitoExtension.class)
 public class AgendamientoServiceTest {
@@ -28,7 +28,7 @@ public class AgendamientoServiceTest {
     private AgendamientoRepository agendamientoRepository;
 
     @Mock
-    private SolicitudCat solicitudCat;
+    private UsuarioCat usuarioCat;
 
     //Con esto creamos una copia de objetos simulados para poder ejecutar 
     @InjectMocks
@@ -64,7 +64,7 @@ public class AgendamientoServiceTest {
     void guardarAgendamiento_deberiaGuardarSiSolicitudExiste() {
         Agendamiento nuevo = new Agendamiento(null, "Agendado", new Date(), "Observación", 5L);
         
-        when(solicitudCat.obtenerSolicitudPorId(5L)).thenReturn(Map.of("idSolicitud", 5L));
+        when(usuarioCat.obtenerUsuarioPorId(5L)).thenReturn(Map.of("idSolicitud", 5L));
         when(agendamientoRepository.save(nuevo)).thenReturn(nuevo);
 
         Agendamiento resultado = agendamientoService.agregarAgendamiento(nuevo);
