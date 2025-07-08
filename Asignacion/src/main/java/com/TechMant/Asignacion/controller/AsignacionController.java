@@ -104,7 +104,7 @@ public class AsignacionController {
             //si este existe modificamos los datos 
             asignacion2.setIdAsignacion(id);
             asignacion2.setNombreAsignado(asig.getNombreAsignado());
-            asignacion2.setNombreCaso(asig.getNombreCaso());
+            asignacion2.setNombreServicio(asig.getNombreServicio());
             //actualizar el servicio
             asignacionService.saveAsignacion(asignacion2);
             return ResponseEntity.ok(asignacion2);

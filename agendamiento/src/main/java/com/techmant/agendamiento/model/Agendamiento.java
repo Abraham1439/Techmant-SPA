@@ -43,8 +43,8 @@ public class Agendamiento {
 
 
     //llaves foraneas
-    @Schema(description = "ID de la solicitud asociada a este agendamiento", example = "5")
+    @Schema(description = "ID del usuario asociado a este agendamiento", example = "5")
     @Column(nullable = false)
-    private Long idSolicitud;
+    private Long idUsuario;
 
 }

@@ -29,7 +29,7 @@ public class Tecnico {
     private String nombre;
 
     @Column(nullable = false)
-    @Schema(description = "Especialidad del técnico", example = "Soporte de redes")
+    @Schema(description = "Especialidad del técnico", example = "Reparación de hardware")
     private String especialidad;
     
 }

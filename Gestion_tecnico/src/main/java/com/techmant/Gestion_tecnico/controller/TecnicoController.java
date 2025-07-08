@@ -1,7 +1,10 @@
 package com.techmant.Gestion_tecnico.controller;
 
+import java.net.URI;
 import java.util.List;
 
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techmant.Gestion_tecnico.model.Tecnico;
 import com.techmant.Gestion_tecnico.service.TecnicoService;
 
+
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,67 +34,73 @@ public class TecnicoController {
     @Autowired
     private TecnicoService tecnicoService;
 
-    @Operation(summary = "Crear un nuevo técnico", description = "Registra un nuevo técnico en la base de datos")
+   @Operation(summary = "Crear un nuevo técnico", description = "Registra un nuevo técnico en la base de datos.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Técnico creado exitosamente"),
+        @ApiResponse(responseCode = "201", description = "Técnico creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
-    
-    // Crear un nuevo técnico
     @PostMapping
     public ResponseEntity<Tecnico> crearTecnico(@RequestBody Tecnico tecnico) {
         Tecnico nuevo = tecnicoService.crearTecnico(tecnico);
-        return ResponseEntity.ok(nuevo);
+        URI location = URI.create("/api/v1/tecnicos/" + nuevo.getIdTecnico());
+        return ResponseEntity.created(location).body(nuevo);
     }
 
-    @Operation(summary = "Obtener todos los técnicos", description = "Devuelve una lista con todos los técnicos registrados")
+    @Operation(summary = "Obtener todos los técnicos", description = "Devuelve una lista con todos los técnicos registrados.")
     @ApiResponse(responseCode = "200", description = "Lista de técnicos obtenida correctamente")
-
-    // Obtener todos los técnicos
     @GetMapping
     public ResponseEntity<List<Tecnico>> obtenerTodosLosTecnicos() {
         return ResponseEntity.ok(tecnicoService.obtenerTodosLosTecnicos());
     }
 
-    @Operation(summary = "Obtener técnico por ID", description = "Busca un técnico específico usando su ID")
+    @Operation(summary = "Obtener técnico por ID", description = "Busca un técnico específico usando su ID.")
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Técnico encontrado"),
-    @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
+        @ApiResponse(responseCode = "200", description = "Técnico encontrado"),
+        @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
-
-    // Obtener un técnico por ID
     @GetMapping("/{id}")
-    public ResponseEntity<Tecnico> obtenerTecnicoPorId(@PathVariable Long id) {
+    public ResponseEntity<Tecnico> obtenerTecnicoPorId(
+            @Parameter(description = "ID del técnico", required = true)
+            @PathVariable Long id) {
         Tecnico tecnico = tecnicoService.obtenerTecnicoPorId(id);
+        if (tecnico == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico no encontrado");
+        }
         return ResponseEntity.ok(tecnico);
     }
 
-    @Operation(summary = "Actualizar técnico", description = "Actualiza los datos de un técnico existente por ID")
+    @Operation(summary = "Actualizar técnico", description = "Actualiza los datos de un técnico existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Técnico actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
-
-    // Actualizar un técnico por ID
     @PutMapping("/{id}")
-    public ResponseEntity<Tecnico> actualizarTecnico(@PathVariable Long id, @RequestBody Tecnico tecnico) {
+    public ResponseEntity<Tecnico> actualizarTecnico(
+            @Parameter(description = "ID del técnico", required = true)
+            @PathVariable Long id,
+            @RequestBody Tecnico tecnico) {
         Tecnico actualizado = tecnicoService.actualizarTecnico(id, tecnico);
         if (actualizado == null) {
-            throw new RuntimeException("Técnico no encontrado con ID: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico no encontrado");
         }
         return ResponseEntity.ok(actualizado);
     }
 
-     @Operation(summary = "Eliminar técnico", description = "Elimina un técnico por su ID")
+    @Operation(summary = "Eliminar técnico", description = "Elimina un técnico por su ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Técnico eliminado exitosamente"),
+        @ApiResponse(responseCode = "204", description = "Técnico eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
-
-    // Eliminar un técnico por ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarTecnico(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarTecnico(
+            @Parameter(description = "ID del técnico", required = true)
+            @PathVariable Long id) {
+        Tecnico tecnico = tecnicoService.obtenerTecnicoPorId(id);
+        if (tecnico == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Técnico no encontrado");
+        }
         tecnicoService.eliminarTecnico(id);
-        return ResponseEntity.ok("Técnico con ID " + id + " eliminado correctamente.");
+        return ResponseEntity.noContent().build();
     }
 }

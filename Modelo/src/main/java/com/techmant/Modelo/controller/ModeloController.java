@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -27,18 +28,24 @@ public class ModeloController {
     @Autowired
     private ModeloService modeloService;
 
-   @Operation(summary = "Crear un nuevo modelo", description = "Registra un nuevo modelo en la base de datos")
+       @Operation(summary = "Crear un nuevo modelo", description = "Registra un nuevo modelo en la base de datos.")
     @ApiResponses(value = {
-    @ApiResponse(responseCode = "200", description = "Modelo creado exitosamente"),
-    @ApiResponse(responseCode = "400", description = "Solicitud inválida")
-})
+        @ApiResponse(responseCode = "201", description = "Modelo creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
+    
     @PostMapping
     public ResponseEntity<Modelo> crearModelo(@RequestBody Modelo modelo) {
-        Modelo nuevo = modeloService.crearModelo(modelo);
-        return ResponseEntity.ok(nuevo);
+        try {
+            Modelo nuevo = modeloService.crearModelo(modelo);
+            return ResponseEntity.created(URI.create("/api/v1/modelos/" + nuevo.getIdModelo())).body(nuevo);
+        } catch (Exception e) {
+            // Aquí puedes capturar errores de validación o de negocio y devolver 400 Bad Request
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @Operation(summary = "Obtener todos los modelos", description = "Devuelve una lista con todos los modelos registrados")
+    @Operation(summary = "Obtener todos los modelos", description = "Devuelve una lista con todos los modelos registrados.")
     @ApiResponse(responseCode = "200", description = "Lista de modelos obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Modelo>> obtenerTodosLosModelos() {
@@ -46,7 +53,7 @@ public class ModeloController {
         return ResponseEntity.ok(modelos);
     }
 
-    @Operation(summary = "Obtener modelo por ID", description = "Busca un modelo específico usando su ID")
+    @Operation(summary = "Obtener modelo por ID", description = "Busca un modelo específico usando su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo encontrado"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
@@ -54,28 +61,44 @@ public class ModeloController {
     @GetMapping("/{id}")
     public ResponseEntity<Modelo> obtenerModeloPorId(@PathVariable Long id) {
         Modelo modelo = modeloService.obtenerModeloPorId(id);
+        if (modelo == null) {
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(modelo);
     }
 
-    @Operation(summary = "Actualizar modelo", description = "Actualiza los datos de un modelo existente por ID")
+    @Operation(summary = "Actualizar modelo", description = "Actualiza los datos de un modelo existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @PutMapping("/{id}")
     public ResponseEntity<Modelo> actualizarModelo(@PathVariable Long id, @RequestBody Modelo modelo) {
-        Modelo actualizado = modeloService.actualizarModelo(id, modelo);
-        return ResponseEntity.ok(actualizado);
+        try {
+            Modelo actualizado = modeloService.actualizarModelo(id, modelo);
+            if (actualizado == null) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            // Validación o error en el request
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    @Operation(summary = "Eliminar modelo", description = "Elimina un modelo por su ID")
+    @Operation(summary = "Eliminar modelo", description = "Elimina un modelo por su ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Modelo eliminado exitosamente"),
+        @ApiResponse(responseCode = "204", description = "Modelo eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarModelo(@PathVariable Long id) {
-        modeloService.eliminarModelo(id);
-        return ResponseEntity.ok("Modelo con ID " + id + " eliminado correctamente.");
+    public ResponseEntity<Void> eliminarModelo(@PathVariable Long id) {
+        try {
+            modeloService.eliminarModelo(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build(); // 404 Not Found si no se encuentra el modelo
+        }
     }
 }

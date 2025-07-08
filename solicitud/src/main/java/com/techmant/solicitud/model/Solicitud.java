@@ -39,6 +39,6 @@ public class Solicitud {
     
     @Column(nullable = false)
     @Schema(description = "Total a pagar por la solicitud", example = "30000")
-    private String total; // Total de la solicitud
+    private int total; // Total de la solicitud
 }  
 

@@ -28,7 +28,7 @@ public class Resena {
     @Schema(description = "ID único de la resena", example = "1")
     private Long idResena; // Identificador único de la resena
 
-     @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 1000)
     @Schema(description = "Contenido de la resena", example = "Excelente servicio, lo recomiendo.")
     private String comentario; // Contenido de la resena
 
@@ -43,8 +43,8 @@ public class Resena {
 
 
     //llave forania 
-    @Schema(description = "ID único del usuario", example = "1")
     @Column(nullable = false) 
+    @Schema(description = "ID único de la cliente", example = "3")
     private Long idUsuario;   
 }
 

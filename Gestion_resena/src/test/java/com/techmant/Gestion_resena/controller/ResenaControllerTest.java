@@ -26,10 +26,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techmant.Gestion_resena.model.Resena;
 import com.techmant.Gestion_resena.service.ResenaService;
 
-@WebMvcTest(ResenaCotroller.class)
+@WebMvcTest(ResenaController.class)
 public class ResenaControllerTest {
 
     
+   
     @Autowired
     private MockMvc mockMvc;
 
@@ -61,7 +62,7 @@ public class ResenaControllerTest {
         mockMvc.perform(post("/api/v1/resena")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(resena)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // Cambiar a 201
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"))
                 .andExpect(jsonPath("$.calificacion").value(5));
     }
@@ -109,10 +110,20 @@ public class ResenaControllerTest {
 
     @Test
     void eliminarResena_existe_eliminaCorrectamente() throws Exception {
+        when(resenaService.obtenerResenaPorId(1L)).thenReturn(resena);
         doNothing().when(resenaService).eliminarResena(1L);
 
         mockMvc.perform(delete("/api/v1/resena/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Resena con ID 1 eliminada correctamente."));
+                .andExpect(status().isNoContent()); // Cambiado a 204
+    }
+
+   @Test
+    void eliminarResena_noExiste_retorna404() throws Exception {
+    // Simula que la reseña no existe
+    when(resenaService.obtenerResenaPorId(1L)).thenReturn(null);
+
+    // Realiza la solicitud de eliminación
+    mockMvc.perform(delete("/api/v1/resena/1"))
+            .andExpect(status().isNotFound()); // Verifica que se devuelve 404
     }
 }

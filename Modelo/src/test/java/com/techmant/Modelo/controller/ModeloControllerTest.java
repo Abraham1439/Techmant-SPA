@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.Mockito.doNothing;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techmant.Modelo.model.Modelo;
@@ -29,11 +31,11 @@ public class ModeloControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private ModeloService modeloService;
-
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private ModeloService modeloService;
 
     private Modelo modelo;
 
@@ -42,14 +44,14 @@ public class ModeloControllerTest {
         modelo = new Modelo(1L, "Samsung", "SN123456789XYZ");
     }
 
-  @Test
+    @Test
     public void testCrearModelo() throws Exception {
         when(modeloService.crearModelo(any(Modelo.class))).thenReturn(modelo);
 
         mockMvc.perform(post("/api/v1/modelos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(modelo)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // Cambiado a 201
                 .andExpect(jsonPath("$.marca").value("Samsung"))
                 .andExpect(jsonPath("$.numeroDeSerie").value("SN123456789XYZ"));
     }
@@ -94,8 +96,10 @@ public class ModeloControllerTest {
 
     @Test
     public void testEliminarModelo() throws Exception {
+        // Simular la eliminación del modelo
+        doNothing().when(modeloService).eliminarModelo(1L);
+
         mockMvc.perform(delete("/api/v1/modelos/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Modelo con ID 1 eliminado correctamente."));
+                .andExpect(status().isNoContent()); // Cambiado a 204
     }
 }

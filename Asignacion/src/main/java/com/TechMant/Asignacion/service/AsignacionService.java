@@ -40,7 +40,7 @@ public class AsignacionService {
             //si no se consigue la categoria mediante el metodo get del otro microservicio
             throw new RuntimeException("Tecnico no encontrado. No se puede guardar la asignacion");
         }
-        //si se encuentra la categoria
+        //si se encuentra el tecnico
         return asignacionRepository.save(nuevaAsignacion);
     }
 
