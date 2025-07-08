@@ -15,7 +15,7 @@ public class LoadDatabase {
 CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
     return args -> {
         if (usuarioRepository.count() == 0) {
-            // ✅ Admin
+            //Admin
             Usuario admin = new Usuario();
             admin.setNombre("Juan Ignacio");
             admin.setCorreo("juanNachi@gmail.com");
@@ -23,7 +23,7 @@ CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEnco
             admin.setIdRol(1);
             usuarioRepository.save(admin);
 
-            // ✅ Técnico de Servicio
+            //Técnico de Servicio
             Usuario tecnicoServicio = new Usuario();
             tecnicoServicio.setNombre("Camila Torres");
             tecnicoServicio.setCorreo("camila.torres@example.com");
@@ -31,7 +31,7 @@ CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEnco
             tecnicoServicio.setIdRol(2);
             usuarioRepository.save(tecnicoServicio);
 
-            // ✅ Cliente
+            //Cliente
             Usuario cliente = new Usuario();
             cliente.setNombre("Renato Morales");
             cliente.setCorreo("renato.morales@example.com");
@@ -39,7 +39,7 @@ CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEnco
             cliente.setIdRol(3);
             usuarioRepository.save(cliente);
 
-            // ✅ Soporte Técnico
+            //Soporte Técnico
             Usuario soporteTecnico = new Usuario();
             soporteTecnico.setNombre("Valentina Reyes");
             soporteTecnico.setCorreo("valentina.reyes@example.com");
@@ -47,7 +47,7 @@ CommandLineRunner initDatabase(UsuarioRepository usuarioRepository, PasswordEnco
             soporteTecnico.setIdRol(4);
             usuarioRepository.save(soporteTecnico);
 
-            // ✅ Supervisor Técnico
+            //Supervisor Técnico
             Usuario supervisorTecnico = new Usuario();
             supervisorTecnico.setNombre("Cristóbal Vera");
             supervisorTecnico.setCorreo("cristobal.vera@example.com");
