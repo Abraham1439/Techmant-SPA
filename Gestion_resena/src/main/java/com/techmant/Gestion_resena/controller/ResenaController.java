@@ -110,7 +110,11 @@ public class ResenaController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarResena(@PathVariable Long id) {
-        resenaService.eliminarResena(id);
-        return ResponseEntity.noContent().build();
+    Resena resena = resenaService.obtenerResenaPorId(id);
+    if (resena == null) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reseña no encontrada");
     }
+    resenaService.eliminarResena(id);
+    return ResponseEntity.noContent().build();
+}
 }

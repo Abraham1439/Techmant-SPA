@@ -32,6 +32,7 @@ import com.techmant.solicitud.service.SolicitudService;
 @WebMvcTest(SolicitudController.class)
 public class SolicitudControllerTest {
      
+    
     @Autowired
     private MockMvc mockMvc;
 
@@ -41,7 +42,6 @@ public class SolicitudControllerTest {
     private Solicitud solicitud;
     private ObjectMapper objectMapper;
 
-  
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
@@ -55,7 +55,7 @@ public class SolicitudControllerTest {
         mockMvc.perform(post("/api/v1/solicitudes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(solicitud)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated()) // Cambiado a 201
                 .andExpect(jsonPath("$.comentario").value("Comentario de prueba"))
                 .andExpect(jsonPath("$.total").value(100000));
     }
@@ -107,6 +107,6 @@ public class SolicitudControllerTest {
         doNothing().when(solicitudService).eliminarSolicitud(1L);
 
         mockMvc.perform(delete("/api/v1/solicitudes/1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isNoContent()); // Cambiado a 204
     }
 }
