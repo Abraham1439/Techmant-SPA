@@ -5,7 +5,9 @@ import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,33 +35,28 @@ public class AsignacionServiceTest {
 
 
     @Test
-    void saveAsignacion_deberiaGuardarAsignacionSiTecnicoExiste() {
-        
-        Asignacion asignacion = new Asignacion(1L, "Juan Pérez", "Reparación", 5L);
+    void saveAsignacion_deberiaGuardarSiTecnicoExiste() {
+        Asignacion nueva = new Asignacion(null, "Juan Pérez", "Reparación", 5L);
         Map<String, Object> tecnicoMock = new HashMap<>();
-
         tecnicoMock.put("id", 5L);
-
         tecnicoMock.put("nombre", "Juan Pérez");
 
         when(tecnicoTec.obtenerTecnicoPorId(5L)).thenReturn(tecnicoMock);
-        when(repository.save(asignacion)).thenReturn(asignacion);
+        when(repository.save(nueva)).thenReturn(nueva);
 
-        Asignacion resultado = service.saveAsignacion(asignacion);
-
-        assertThat(resultado).isEqualTo(asignacion);
+        Asignacion resultado = service.saveAsignacion(nueva);
+        assertThat(resultado).isEqualTo(nueva);
     }
 
 
     //Test para obtener todas las asignaciones
     @Test
-    void obtenerAsignaciones_deberiaRetornarListaDeAsignaciones() {
+    void obtenerAsignaciones_deberiaRetornarLista() {
         Asignacion asignacion = new Asignacion(1L, "Carlos", "Instalación", 2L);
-        when(repository.findAll()).thenReturn(java.util.List.of(asignacion));
+        when(repository.findAll()).thenReturn(List.of(asignacion));
 
-        var resultado = service.obtenerAsignaciones();
-    
-        assertThat(resultado).isNotEmpty();
+        List<Asignacion> resultado = service.obtenerAsignaciones();
+
         assertThat(resultado).hasSize(1);
         assertThat(resultado.get(0).getNombreAsignado()).isEqualTo("Carlos");
     }
@@ -68,27 +65,23 @@ public class AsignacionServiceTest {
 
     //Test para obtener asignación por ID
     @Test
-    void obtenerAsignacionporId_deberiaRetornarAsignacionSiExiste() {
-    
+    void obtenerAsignacionporId_deberiaRetornarAsignacion() {
         Asignacion asignacion = new Asignacion(1L, "Luisa", "Diagnóstico", 4L);
-        when(repository.findById(1L)).thenReturn(java.util.Optional.of(asignacion));
+        when(repository.findById(1L)).thenReturn(Optional.of(asignacion));
 
-    
         Asignacion resultado = service.obtenerAsignacionporId(1L);
 
-    
         assertThat(resultado).isNotNull();
-        assertThat(resultado.getNombreAsignado()).isEqualTo("Diagnóstico");
+        assertThat(resultado.getNombreAsignado()).isEqualTo("Luisa");
     }
 
 
     //Test para eliminar asignación por ID
     @Test
-    void eliminarAsignacionPorId_deberiaEliminarAsignacionSiExiste() {
-    
+    void eliminarAsignacionPorId_deberiaEliminarAsignacion() {
         Long id = 10L;
         Asignacion asignacion = new Asignacion(id, "Pedro", "Soporte", 3L);
-        when(repository.findById(id)).thenReturn(java.util.Optional.of(asignacion));
+        when(repository.findById(id)).thenReturn(Optional.of(asignacion));
 
         service.eliminarAsignacionPorId(id);
 
