@@ -28,6 +28,7 @@ import com.techmant.Gestion_tecnico.repository.TecnicoRepository;
 @ExtendWith(MockitoExtension.class)
 public class TecnicoServiceTest {
     
+     
     @Mock
     private TecnicoRepository tecnicoRepository;
 
@@ -38,19 +39,26 @@ public class TecnicoServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Especialidad relevante para técnicos electrónicos
-        tecnico = new Tecnico(1L, "Juan Pérez", "Reparación de teléfonos móviles");
+        // Especialidad relevante para técnicos
+        tecnico = new Tecnico(1L, "Juan Pérez", "Reparación de hardware");
     }
 
     @Test
     void obtenerTodosLosTecnicos_returnsList() {
-        List<Tecnico> tecnicos = Arrays.asList(tecnico);
+        List<Tecnico> tecnicos = Arrays.asList(tecnico, 
+            new Tecnico(2L, "Ana Gómez", "Instalación de software"),
+            new Tecnico(3L, "Pedro Sánchez", "Soporte técnico general"));
         when(tecnicoRepository.findAll()).thenReturn(tecnicos);
 
         List<Tecnico> result = tecnicoService.obtenerTodosLosTecnicos();
 
-        assertEquals(1, result.size());
+        assertEquals(3, result.size());
         assertEquals("Juan Pérez", result.get(0).getNombre());
+        assertEquals("Reparación de hardware", result.get(0).getEspecialidad());
+        assertEquals("Ana Gómez", result.get(1).getNombre());
+        assertEquals("Instalación de software", result.get(1).getEspecialidad());
+        assertEquals("Pedro Sánchez", result.get(2).getNombre());
+        assertEquals("Soporte técnico general", result.get(2).getEspecialidad());
     }
 
     @Test
@@ -61,8 +69,8 @@ public class TecnicoServiceTest {
 
         assertNotNull(result);
         assertEquals("Juan Pérez", result.getNombre());
+        assertEquals("Reparación de hardware", result.getEspecialidad());
     }
-
 
     @Test
     void crearTecnico_savesAndReturns() {
@@ -72,11 +80,12 @@ public class TecnicoServiceTest {
 
         assertNotNull(result);
         assertEquals("Juan Pérez", result.getNombre());
+        assertEquals("Reparación de hardware", result.getEspecialidad());
     }
 
     @Test
     void actualizarTecnico_successful() {
-        Tecnico actualizado = new Tecnico(1L, "Juan Pérez Actualizado", "Soporte técnico de computadores");
+        Tecnico actualizado = new Tecnico(1L, "Juan Pérez Actualizado", "Instalación de software");
 
         when(tecnicoRepository.existsById(1L)).thenReturn(true);
         when(tecnicoRepository.save(actualizado)).thenReturn(actualizado);
@@ -84,7 +93,7 @@ public class TecnicoServiceTest {
         Tecnico result = tecnicoService.actualizarTecnico(1L, actualizado);
 
         assertEquals("Juan Pérez Actualizado", result.getNombre());
-        assertEquals("Soporte técnico de computadores", result.getEspecialidad());
+        assertEquals("Instalación de software", result.getEspecialidad());
     }
 
     @Test
@@ -114,4 +123,4 @@ public class TecnicoServiceTest {
 
         verify(tecnicoRepository, never()).deleteById(any(Long.class));
     }
-}    
+}
