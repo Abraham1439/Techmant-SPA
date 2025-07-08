@@ -23,7 +23,7 @@ import com.techmant.agendamiento.webusuario.UsuarioCat;
 @ExtendWith(MockitoExtension.class)
 public class AgendamientoServiceTest {
 
-
+    
     //creamos una copia del repository con el mock ya que se necesita el acceso 
     @Mock
     private AgendamientoRepository agendamientoRepository;
