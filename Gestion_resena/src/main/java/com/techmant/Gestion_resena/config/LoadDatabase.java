@@ -66,7 +66,7 @@ public class LoadDatabase {
                         3L  // cliente
                 ));
 
-                System.out.println("Reseñas positivas de cliente precargadas exitosamente.");
+                System.out.println("Reseñas de cliente precargadas exitosamente.");
             } else {
                 System.out.println("Las reseñas ya están precargadas.");
             }
