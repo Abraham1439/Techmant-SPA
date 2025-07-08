@@ -28,32 +28,24 @@ public class ModeloController {
     @Autowired
     private ModeloService modeloService;
 
-     @Operation(
-        summary = "Crear un nuevo modelo",
-        description = "Registra un nuevo modelo en la base de datos."
-    )
+       @Operation(summary = "Crear un nuevo modelo", description = "Registra un nuevo modelo en la base de datos.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Modelo creado exitosamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud inválida")
     })
+    
     @PostMapping
     public ResponseEntity<Modelo> crearModelo(@RequestBody Modelo modelo) {
         try {
             Modelo nuevo = modeloService.crearModelo(modelo);
-            // Retorna 201 Created con Location del recurso creado
-            return ResponseEntity
-                    .created(URI.create("/api/v1/modelos/" + nuevo.getIdModelo()))
-                    .body(nuevo);
+            return ResponseEntity.created(URI.create("/api/v1/modelos/" + nuevo.getIdModelo())).body(nuevo);
         } catch (Exception e) {
             // Aquí puedes capturar errores de validación o de negocio y devolver 400 Bad Request
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @Operation(
-        summary = "Obtener todos los modelos",
-        description = "Devuelve una lista con todos los modelos registrados."
-    )
+    @Operation(summary = "Obtener todos los modelos", description = "Devuelve una lista con todos los modelos registrados.")
     @ApiResponse(responseCode = "200", description = "Lista de modelos obtenida correctamente")
     @GetMapping
     public ResponseEntity<List<Modelo>> obtenerTodosLosModelos() {
@@ -61,10 +53,7 @@ public class ModeloController {
         return ResponseEntity.ok(modelos);
     }
 
-    @Operation(
-        summary = "Obtener modelo por ID",
-        description = "Busca un modelo específico usando su ID."
-    )
+    @Operation(summary = "Obtener modelo por ID", description = "Busca un modelo específico usando su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo encontrado"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
@@ -78,10 +67,7 @@ public class ModeloController {
         return ResponseEntity.ok(modelo);
     }
 
-    @Operation(
-        summary = "Actualizar modelo",
-        description = "Actualiza los datos de un modelo existente por ID."
-    )
+    @Operation(summary = "Actualizar modelo", description = "Actualiza los datos de un modelo existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
         @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
@@ -101,18 +87,18 @@ public class ModeloController {
         }
     }
 
-    @Operation(
-        summary = "Eliminar modelo",
-        description = "Elimina un modelo por su ID."
-    )
+    @Operation(summary = "Eliminar modelo", description = "Elimina un modelo por su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Modelo eliminado exitosamente"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
-    
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarModelo(@PathVariable Long id) {
-        modeloService.eliminarModelo(id);
-        return ResponseEntity.ok("Modelo con ID " + id + " eliminado correctamente.");
+    public ResponseEntity<Void> eliminarModelo(@PathVariable Long id) {
+        try {
+            modeloService.eliminarModelo(id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build(); // 404 Not Found si no se encuentra el modelo
+        }
     }
 }
