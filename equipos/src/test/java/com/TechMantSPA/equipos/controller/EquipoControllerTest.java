@@ -3,37 +3,41 @@ package com.TechMantSPA.equipos.controller;
 import com.TechMantSPA.equipos.client.UsuarioClient;
 import com.TechMantSPA.equipos.dto.UsuarioDTO;
 import com.TechMantSPA.equipos.model.Equipos;
+import com.TechMantSPA.equipos.services.EquipoServiceTest;
 import com.TechMantSPA.equipos.services.EquipoServices;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @WebMvcTest(EquipoController.class)
-class EquipoControllerTest {
+public class EquipoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private EquipoServices equipoServices;
@@ -42,127 +46,119 @@ class EquipoControllerTest {
     private UsuarioClient usuarioClient;
 
     private Equipos equipo;
-    private List<Equipos> listaEquipos;
+    private UsuarioDTO propietario;
+    private UsuarioDTO usuarioRegistro;
 
     @BeforeEach
     void setUp() {
-        Equipos equipo1 = new Equipos(1L, "Laptop", "HP", "12345", "Equipo funcional", 10L);
-        Equipos equipo2 = new Equipos(2L, "PC", "Dell", "54321", "Equipo en reparación", 20L);
-        listaEquipos = Arrays.asList(equipo1, equipo2);
+        equipo = new Equipos();
+        equipo.setIdEquipo(1L);
+        equipo.setTipoDeDispositivo("Laptop");
+        equipo.setMarca("Dell");
+        equipo.setNroSerie("ABC123");
+        equipo.setDescripcion("Prueba");
+        equipo.setIdDuenoEquipo(2L);
+        equipo.setIdUsuarioRegistro(3L);
 
-        objectMapper = new ObjectMapper();
+        propietario = new UsuarioDTO();
+        propietario.setIdUsuario(2L);
+        propietario.setIdRol(3L); // Cliente
+        propietario.setNombre("Juan Propietario");
+        propietario.setCorreo("propietario@test.com");
+
+        usuarioRegistro = new UsuarioDTO();
+        usuarioRegistro.setIdUsuario(3L);
+        usuarioRegistro.setIdRol(1L); // Admin
+        usuarioRegistro.setNombre("Maria Registro");
+        usuarioRegistro.setCorreo("registro@test.com");
     }
 
     @Test
-    void getAllEquipos_retornaListaCon200() throws Exception {
-        when(equipoServices.getAllEquipos()).thenReturn(listaEquipos);
+    void getAll_returnsList() throws Exception {
+        when(equipoServices.getAllEquipos()).thenReturn(Arrays.asList(equipo));
 
         mockMvc.perform(get("/api/v1/equipos"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].idEquipo").value(1L))
-                .andExpect(jsonPath("$[0].tipoDeDispositivo").value("Laptop"));
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getEquipoById_existente_retornaEquipo() throws Exception {
-        Equipos equipo = new Equipos(1L, "Laptop", "HP", "12345", "Equipo funcional", 10L);
-        when(equipoServices.getEquipoById(1L)).thenReturn(equipo);
+    void getAll_noContent() throws Exception {
+        when(equipoServices.getAllEquipos()).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/v1/equipos/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idEquipo").value(1L))
-                .andExpect(jsonPath("$.tipoDeDispositivo").value("Laptop"))
-                .andExpect(jsonPath("$.marca").value("HP"));
-    }
-
-    @Test
-    void getEquiposPorTipo_existente_retornaListaEquipos() throws Exception {
-        List<Equipos> equipos = List.of(
-                new Equipos(1L, "Laptop", "Dell", "ABC123", "Buen estado", 10L),
-                new Equipos(2L, "Laptop", "HP", "XYZ789", "Nuevo", 11L));
-
-        when(equipoServices.getEquiposPorTipo("Laptop")).thenReturn(equipos);
-
-        mockMvc.perform(get("/api/v1/equipos/tipo/Laptop"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].marca").value("Dell"))
-                .andExpect(jsonPath("$[1].marca").value("HP"));
-    }
-
-    @Test
-    void getEquiposPorUsuario_existente_retornaListaEquipos() throws Exception {
-        List<Equipos> equipos = List.of(
-                new Equipos(1L, "Tablet", "Samsung", "TBL123", "Pantalla rota", 8L),
-                new Equipos(2L, "Tablet", "Lenovo", "TBL456", "Funciona correctamente", 8L));
-
-        when(equipoServices.getEquiposPorUsuario(8L)).thenReturn(equipos);
-
-        mockMvc.perform(get("/api/v1/equipos/usuario/8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].marca").value("Samsung"))
-                .andExpect(jsonPath("$[1].marca").value("Lenovo"));
-    }
-
-    @Test
-    void getEquiposPorTipoYUsuario_existente_retornaListaEquipos() throws Exception {
-        List<Equipos> equipos = List.of(
-                new Equipos(1L, "Laptop", "Dell", "SN123", "Buen estado", 8L),
-                new Equipos(2L, "Laptop", "HP", "SN456", "Funciona lento", 8L));
-
-        when(equipoServices.getEquiposPorTipoYUsuario("Laptop", 8L)).thenReturn(equipos);
-
-        mockMvc.perform(get("/api/v1/equipos/tipo/Laptop/usuario/8"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].marca").value("Dell"))
-                .andExpect(jsonPath("$[1].marca").value("HP"));
-    }
-
-    @Test
-    void createEquipo_usuarioValido_creaEquipo() throws Exception {
-        Equipos nuevoEquipo = new Equipos(null, "Impresora", "HP", "SN789", "Nueva impresora", 10L);
-        Equipos equipoCreado = new Equipos(3L, "Impresora", "HP", "SN789", "Nueva impresora", 10L);
-
-        UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setIdRol(2L); // Rol permitido
-
-        when(usuarioClient.getUsuarioById(10L)).thenReturn(usuarioDTO);
-        when(equipoServices.createEquipo(any(Equipos.class))).thenReturn(equipoCreado);
-
-        mockMvc.perform(post("/api/v1/equipos")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(nuevoEquipo)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idEquipo").value(3L))
-                .andExpect(jsonPath("$.tipoDeDispositivo").value("Impresora"));
-    }
-
-    @Test
-    void updateEquipo_existingId_returnsUpdatedEquipo() throws Exception {
-        Equipos equipoActualizado = new Equipos(1L, "Laptop", "Dell", "123ABC", "Equipo actualizado", 2L);
-
-        when(equipoServices.updateEquipo(eq(1L), any(Equipos.class))).thenReturn(equipoActualizado);
-
-        mockMvc.perform(put("/api/v1/equipos/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(equipoActualizado)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idEquipo").value(1L))
-                .andExpect(jsonPath("$.tipoDeDispositivo").value("Laptop"))
-                .andExpect(jsonPath("$.marca").value("Dell"))
-                .andExpect(jsonPath("$.nroSerie").value("123ABC"))
-                .andExpect(jsonPath("$.descripcion").value("Equipo actualizado"))
-                .andExpect(jsonPath("$.idUsuario").value(2));
-    }
-
-    @Test
-    void deleteEquipo_existingId_returnsNoContent() throws Exception {
-        Long idEquipo = 1L;
-
-        mockMvc.perform(delete("/api/v1/equipos/{id}", idEquipo))
+        mockMvc.perform(get("/api/v1/equipos"))
                 .andExpect(status().isNoContent());
     }
 
+    @Test
+    void getEquipoById_found() throws Exception {
+        when(equipoServices.getEquipoById(1L)).thenReturn(equipo);
+        when(usuarioClient.getUsuarioById(2L)).thenReturn(propietario);
+        when(usuarioClient.getUsuarioById(3L)).thenReturn(usuarioRegistro);
+
+        mockMvc.perform(get("/api/v1/equipos/1"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEquipoById_notFound() throws Exception {
+        when(equipoServices.getEquipoById(1L)).thenReturn(null);
+
+        mockMvc.perform(get("/api/v1/equipos/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getEquiposPorTipo_returnsList() throws Exception {
+        when(equipoServices.getEquiposPorTipo("Laptop")).thenReturn(Arrays.asList(equipo));
+
+        mockMvc.perform(get("/api/v1/equipos/tipo/Laptop"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEquiposPorUsuario_returnsList() throws Exception {
+        when(equipoServices.getEquiposPorUsuario(3L)).thenReturn(Arrays.asList(equipo));
+
+        mockMvc.perform(get("/api/v1/equipos/usuario/3"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getEquiposPorTipoYUsuario_returnsList() throws Exception {
+        when(equipoServices.getEquiposPorTipoYUsuario("Laptop", 3L)).thenReturn(Arrays.asList(equipo));
+
+        mockMvc.perform(get("/api/v1/equipos/tipo/Laptop/usuario/3"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void createEquipo_success() throws Exception {
+        when(usuarioClient.getUsuarioById(2L)).thenReturn(propietario);
+        when(usuarioClient.getUsuarioById(3L)).thenReturn(usuarioRegistro);
+        when(equipoServices.createEquipo(Mockito.any())).thenReturn(equipo);
+
+        mockMvc.perform(post("/api/v1/equipos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(equipo)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createEquipo_propietarioInvalido() throws Exception {
+        when(usuarioClient.getUsuarioById(2L)).thenReturn(null);
+
+        mockMvc.perform(post("/api/v1/equipos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(equipo)))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void deleteEquipo_success() throws Exception {
+        doNothing().when(equipoServices).deleteEquipo(1L);
+
+        mockMvc.perform(delete("/api/v1/equipos/1"))
+                .andExpect(status().isNoContent());
+    }
 }

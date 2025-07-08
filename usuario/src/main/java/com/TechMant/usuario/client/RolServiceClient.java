@@ -9,7 +9,7 @@ import com.TechMant.usuario.dto.RolDTO;
 @Service
 public class RolServiceClient {
     private final RestTemplate restTemplate;
-    private static final String ROL_SERVICE_URL = "http://localhost:8082/api/v1/rol"; // Rol en 8082
+    private static final String ROL_SERVICE_URL = "http://localhost:8080/api/v1/rol"; // Rol en 8082
 
     public RolServiceClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;

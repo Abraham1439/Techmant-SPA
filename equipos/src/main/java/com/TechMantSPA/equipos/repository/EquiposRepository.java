@@ -10,8 +10,8 @@ import com.TechMantSPA.equipos.model.Equipos;
 @Repository
 public interface EquiposRepository extends JpaRepository<Equipos, Long> {
 
-    List<Equipos> findByIdUsuario(Long idUsuario);
-    List<Equipos> findByTipoDeDispositivoAndIdUsuario(String tipo, Long idUsuario);
+    List<Equipos> findByIdDuenoEquipo(Long idDuenoEquipo);
+    List<Equipos> findByTipoDeDispositivoAndIdDuenoEquipo(String tipo, Long idDuenoEquipo);
 
     List<Equipos> findByTipoDeDispositivo(String tipo);
 

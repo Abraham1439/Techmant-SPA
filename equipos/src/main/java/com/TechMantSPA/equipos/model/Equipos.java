@@ -39,7 +39,10 @@ public class Equipos {
     @Schema(description = "Descripción detallada del equipo", example = "Laptop Dell XPS 15, 16GB RAM, 512GB SSD")
     private String descripcion;
     
-    @Column(name="id_usuario")
-    @Schema(description = "ID del usuario al que está asignado el equipo", example = "123", required = true)
-    private Long idUsuario;
+    @Column(name="id_usuario_registro")
+    private Long idUsuarioRegistro;
+
+    @Column(name="id_dueno_equipo")
+    private Long idDuenoEquipo;
+    
 }

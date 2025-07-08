@@ -17,12 +17,12 @@ public class UsuarioClient {
         this.restTemplate = restTemplate;
     }
 
-    public UsuarioDTO getUsuarioById(Long idUsuario){
+    public UsuarioDTO getUsuarioById(Long duenioEquipo){
         try {
-            String url = USUARIO_SERVICE_URL + "/" + idUsuario;
+            String url = USUARIO_SERVICE_URL + "/" + duenioEquipo;
             return restTemplate.getForObject(url, UsuarioDTO.class);
         } catch (HttpClientErrorException.NotFound e) {
-            System.out.println("Usuario no encontrado con ID: "+ idUsuario);
+            System.out.println("Usuario no encontrado con ID: "+ duenioEquipo);
             return null;
         } catch (HttpClientErrorException | ResourceAccessException e){
 

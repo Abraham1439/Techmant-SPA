@@ -1,9 +1,12 @@
 package com.TechMant.usuario.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,11 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.TechMant.usuario.client.RolServiceClient;
-import com.TechMant.usuario.dto.RolDTO;
+import com.TechMant.usuario.dto.LoginRequest;
+import com.TechMant.usuario.dto.LoginResponse;
 import com.TechMant.usuario.model.Usuario;
 import com.TechMant.usuario.service.UsuarioService;
 
@@ -33,8 +35,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @Autowired
-    private RolServiceClient rolServiceClient;
     
     @Operation(summary = "Obtener todos los usuarios", 
               description = "Retorna una lista de todos los usuarios registrados en el sistema")
@@ -88,19 +88,33 @@ public class UsuarioController {
         @ApiResponse(responseCode = "403", description = "No tiene permisos para crear usuarios"),
         @ApiResponse(responseCode = "400", description = "Error en la creación del usuario")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario, @RequestParam Integer idRolSolicitante) {
-        // Validar si quien intenta crear el usuario tiene idRol = 1
-        if(idRolSolicitante != 1){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permisos para crear usuarios");
+    public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario) {
+        try {
+            Usuario creado = usuarioService.createUsuario(usuario);
+            creado.setPassword(null); // No exponer la contraseña
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear usuario: " + e.getMessage());
         }
-        RolDTO rol = rolServiceClient.getRolById(usuario.getIdRol());
-        if(rol == null){
-            return ResponseEntity.badRequest().body("Error: el rol con ID "+usuario.getIdRol() + " no existe");
+    }
 
+    // Endpoint de login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+        try {
+            LoginResponse response = usuarioService.login(loginRequest);
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());    
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al iniciar sesión: " + e.getMessage());
         }
-        usuarioService.createUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
     @Operation(summary = "Actualizar un usuario existente", 

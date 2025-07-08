@@ -20,13 +20,13 @@ public List<Equipos> getEquiposPorTipo(String tipo) {
 }
 
 // Obtener equipos por ID de usuario
-public List<Equipos> getEquiposPorUsuario(Long idUsuario) {
-    return equiposRepository.findByIdUsuario(idUsuario);
+public List<Equipos> getEquiposPorUsuario(Long idPropietario) {
+    return equiposRepository.findByIdDuenoEquipo(idPropietario);
 }
 
 // Obtener equipos por tipo de dispositivo y usuario
-public List<Equipos> getEquiposPorTipoYUsuario(String tipo, Long idUsuario) {
-    return equiposRepository.findByTipoDeDispositivoAndIdUsuario(tipo, idUsuario);
+public List<Equipos> getEquiposPorTipoYUsuario(String tipo, Long idPropietario) {
+    return equiposRepository.findByTipoDeDispositivoAndIdDuenoEquipo(tipo, idPropietario);
 }
 
 

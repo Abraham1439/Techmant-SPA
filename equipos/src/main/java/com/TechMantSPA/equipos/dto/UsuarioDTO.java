@@ -9,5 +9,4 @@ public class UsuarioDTO {
     private String correo;
     private String password;
     private Long idRol;
-    private Long idEstado;
 }

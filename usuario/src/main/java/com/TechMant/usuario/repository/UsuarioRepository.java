@@ -1,6 +1,7 @@
 package com.TechMant.usuario.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -21,6 +22,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
      * @return Lista de usuarios que tienen el rol especificado
      */
     List<Usuario> findByIdRol(Integer idRol); 
+    boolean existsByCorreo(String correo);
+    Optional<Usuario> findByCorreo(String correo);
 
 }
 
