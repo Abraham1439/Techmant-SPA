@@ -13,9 +13,10 @@ import java.util.Date;
 @Configuration
 public class LoadDatabase {
     
-     @Bean
+      @Bean
     public CommandLineRunner precargarResenas(ResenaRepository resenaRepository) {
         return args -> {
+            // Comprobar si ya existen registros en la base de datos
             if (resenaRepository.count() == 0) {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 
@@ -66,6 +67,8 @@ public class LoadDatabase {
                 ));
 
                 System.out.println("Reseñas positivas de cliente precargadas exitosamente.");
+            } else {
+                System.out.println("Las reseñas ya están precargadas.");
             }
         };
     }

@@ -13,6 +13,7 @@ public class LoadDatabase {
     @Bean
     public CommandLineRunner precargarModelos(ModeloRepository modeloRepository) {
         return args -> {
+            // Comprobar si ya existen registros en la base de datos
             if (modeloRepository.count() == 0) {
                 modeloRepository.save(new Modelo(
                         null,
@@ -45,8 +46,9 @@ public class LoadDatabase {
                 ));
 
                 System.out.println("Modelos precargados exitosamente.");
+            } else {
+                System.out.println("Los modelos ya están precargados.");
             }
         };
     }
 }
-

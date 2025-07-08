@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.techmant.Gestion_resena.model.Resena;
 import com.techmant.Gestion_resena.service.ResenaService;
 
-@WebMvcTest(ResenaCotroller.class)
+@WebMvcTest(ResenaController.class)
 public class ResenaControllerTest {
 
     
