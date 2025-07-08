@@ -34,77 +34,61 @@ public class AsignacionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     //crear las pruebas unitarias
     @Test
-    void listarAsignaciones_deberiaRetornarListaDeAsignaciones() {
-        try {
-            List<Asignacion> lista = Arrays.asList(new Asignacion(1L, "Pedro González", "Caso de red", 1L));
-            when(asignacionService.obtenerAsignaciones()).thenReturn(lista);
+    void listarAsignaciones_deberiaRetornarLista() throws Exception {
+        List<Asignacion> lista = Arrays.asList(new Asignacion(1L, "Pedro González", "Caso de red", 1L));
+        when(asignacionService.obtenerAsignaciones()).thenReturn(lista);
 
-            mockMvc.perform(get("/api/v1/asignaciones")).andExpect(status().isOk()).andExpect(jsonPath("$[0].nombreAsignado").value("Pedro González")).andExpect(jsonPath("$[0].nombreCaso").value("Caso de red"));
-        
-        }catch (Exception ex) {
-
-        }
+        mockMvc.perform(get("/api/v1/asignaciones")).andExpect(status().isOk()).andExpect(jsonPath("$[0].nombreAsignado").value("Pedro González")).andExpect(jsonPath("$[0].nombreServicio").value("Caso de red"));
     }
+
 
 
 
     //Prueba para para agregar Asignaciones
     @Test
-    void agregarAsignacion_deberiaCrearAsignacion() {
-        try {
-            Asignacion nueva = new Asignacion(3L, "Juan Díaz", "Caso de software", 3L);
+    void agregarAsignacion_deberiaCrearAsignacion() throws Exception {
+        Asignacion nueva = new Asignacion(null, "Juan Díaz", "Caso de software", 3L);
+        Asignacion guardada = new Asignacion(3L, "Juan Díaz", "Caso de software", 3L);
 
-            when(asignacionService.saveAsignacion(any(Asignacion.class))).thenReturn(nueva);
+        when(asignacionService.saveAsignacion(any(Asignacion.class))).thenReturn(guardada);
 
-            ObjectMapper mapper = new ObjectMapper();
-            String json = mapper.writeValueAsString(nueva);
-
-            mockMvc.perform(post("/api/v1/asignaciones").contentType("application/json").content(json)).andExpect(status().isCreated()).andExpect(jsonPath("$.nombreAsignado").value("Juan Díaz")).andExpect(jsonPath("$.nombreCaso").value("Caso de software"));
-        }catch (Exception ex) {
-
-        }
+        mockMvc.perform(post("/api/v1/asignaciones").contentType("application/json").content(objectMapper.writeValueAsString(nueva)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.nombreAsignado").value("Juan Díaz"))
+                .andExpect(jsonPath("$.nombreServicio").value("Caso de software"));
     }
+
 
 
     //Prueba para obtener Asignacion por ID
     @Test
-    void obtenerAsignacionporId_deberiaRetornarAsignacionPorId() {
-        try {
-            Asignacion asignacion = new Asignacion(2L, "Lucía Rojas", "Caso de impresora", 2L);
-            
-            when(asignacionService.obtenerAsignacionporId(2L)).thenReturn(asignacion);
+    void obtenerAsignacionporId_deberiaRetornarAsignacion() throws Exception {
+        Asignacion asignacion = new Asignacion(2L, "Lucía Rojas", "Caso de impresora", 2L);
+        when(asignacionService.obtenerAsignacionporId(2L)).thenReturn(asignacion);
 
-            mockMvc.perform(get("/api/v1/asignaciones/2")).andExpect(status().isOk()).andExpect(jsonPath("$.nombreAsignado").value("Lucía Rojas")).andExpect(jsonPath("$.nombreCaso").value("Caso de impresora"));
-        
-        }catch (Exception ex) {
-
-        }
+        mockMvc.perform(get("/api/v1/asignaciones/2")).andExpect(status().isOk()).andExpect(jsonPath("$.nombreAsignado").value("Lucía Rojas")).andExpect(jsonPath("$.nombreServicio").value("Caso de impresora"));
     }
 
 
 
     //Prueba para Actualizar Asignaciones
     @Test
-    void modificarAsignacion_deberiaActualizarAsignacion() {
-        try {
-            // Datos originales y modificados
-        Asignacion asignacionExistente = new Asignacion(1L, "Luis Rojas", "Caso X", 2L);
-        Asignacion asignacionActualizada = new Asignacion(1L, "Luis Rojas", "Caso Y", 2L);
+    void modificarAsignacion_deberiaActualizar() throws Exception {
+        Asignacion existente = new Asignacion(1L, "Luis Rojas", "Caso X", 2L);
+        Asignacion actualizado = new Asignacion(1L, "Luis Rojas", "Caso Y", 2L);
 
-        when(asignacionService.obtenerAsignacionporId(1L)).thenReturn(asignacionExistente);
-        when(asignacionService.saveAsignacion(any(Asignacion.class))).thenReturn(asignacionActualizada);
+        when(asignacionService.obtenerAsignacionporId(1L)).thenReturn(existente);
+        when(asignacionService.saveAsignacion(any(Asignacion.class))).thenReturn(actualizado);
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        mockMvc.perform(put("/api/v1/asignaciones/1").contentType("application/json").content(objectMapper.writeValueAsString(asignacionActualizada))).andExpect(status().isOk()).andExpect(jsonPath("$.nombreAsignado").value("Luis Rojas")).andExpect(jsonPath("$.nombreCaso").value("Caso Y")).andExpect(jsonPath("$.idTecnico").value(2));
-        
-        }catch (Exception ex) {
-
-        }
-
-        
+        mockMvc.perform(put("/api/v1/asignaciones/1").contentType("application/json").content(objectMapper.writeValueAsString(actualizado))).andExpect(status().isOk())
+                .andExpect(jsonPath("$.nombreAsignado").value("Luis Rojas"))
+                .andExpect(jsonPath("$.nombreServicio").value("Caso Y"))
+                .andExpect(jsonPath("$.idTecnico").value(2));
     }
 
 
@@ -112,17 +96,12 @@ public class AsignacionControllerTest {
 
     //Prueba para eliminar Asignaciones
     @Test
-    void eliminarAsignacionPorId_deberiaEliminarAsignacion()  {
-        try {
-            doNothing().when(asignacionService).eliminarAsignacionPorId(1L);
+    void eliminarAsignacionPorId_deberiaEliminarConExito() throws Exception {
+        doNothing().when(asignacionService).eliminarAsignacionPorId(1L);
 
-            mockMvc.perform(delete("/api/v1/asignaciones/1")).andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/v1/asignaciones/1")).andExpect(status().isNoContent());
 
-            verify(asignacionService).eliminarAsignacionPorId(1L);
-        
-        }catch (Exception ex) {
-
-        }
+        verify(asignacionService).eliminarAsignacionPorId(1L);
     }
 
 
