@@ -19,11 +19,14 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    private static final String ADMIN = "admin";
+    private static final String PASSWORD = "Admin123$";
+
     // Usuarios en memoria para autenticación básica
     @Bean
     public InMemoryUserDetailsManager userDetailsService(){
-        UserDetails admin = User.withUsername("juanNachi@gmail.com")
-                .password(passwordEncoder().encode("12345"))
+        UserDetails admin = User.withUsername(ADMIN)
+                .password(passwordEncoder().encode(PASSWORD))
                 .roles("ADMIN")  // rol ADMIN
                 .build();
 

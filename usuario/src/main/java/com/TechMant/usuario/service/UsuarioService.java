@@ -1,6 +1,7 @@
 package com.TechMant.usuario.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -80,13 +81,23 @@ public class UsuarioService {
 
     // Método para actualizar un usuario existente
     public Usuario updateUsuario(Long id, Usuario usuario) {
-        Usuario existingUsuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Usuario existingUsuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+        // Validar si el correo fue cambiado
+        if (!existingUsuario.getCorreo().equals(usuario.getCorreo())) {
+            Optional<Usuario> usuarioConCorreo = usuarioRepository.findByCorreo(usuario.getCorreo());
+    
+            if (usuarioConCorreo.isPresent() && !usuarioConCorreo.get().getIdUsuario().equals(id)) {
+                throw new IllegalArgumentException("Correo ya registrado por otro usuario");
+            }
+        }
+    
         existingUsuario.setNombre(usuario.getNombre());
         existingUsuario.setCorreo(usuario.getCorreo());
         existingUsuario.setPassword(usuario.getPassword());
         return usuarioRepository.save(existingUsuario);
     }
-
     // Método para eliminar un usuario
     public void deleteUsuario(Long id) {
         Usuario existingUsuario = usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
