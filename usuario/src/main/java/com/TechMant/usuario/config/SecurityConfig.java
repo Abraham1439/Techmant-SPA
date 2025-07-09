@@ -43,7 +43,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Para pruebas POST sin token CSRF
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()  // permitir login o registro público
+                .requestMatchers("/api/auth/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+                "/v3/api-docs/**").permitAll()  // permitir login o registro público
                 .anyRequest().authenticated()                  // resto requiere autenticación
             )
             .httpBasic(Customizer.withDefaults()); // Usa autenticación básica (username/password)

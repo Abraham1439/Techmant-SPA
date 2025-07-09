@@ -64,7 +64,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByCorreo(correo).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         
         if(!passwordEncoder.matches(password, usuario.getPassword())){
-            throw new BadCredentialsException("Contraseña incorrecta");
+            throw new BadCredentialsException("Correo o contraseña incorrectos");
         }
 
         RolDTO rolDTO = rolServiceClient.getRolById(usuario.getIdRol());
@@ -95,7 +95,7 @@ public class UsuarioService {
     
         existingUsuario.setNombre(usuario.getNombre());
         existingUsuario.setCorreo(usuario.getCorreo());
-        existingUsuario.setPassword(usuario.getPassword());
+        existingUsuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(existingUsuario);
     }
     // Método para eliminar un usuario

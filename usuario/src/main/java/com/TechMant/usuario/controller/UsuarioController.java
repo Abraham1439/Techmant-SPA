@@ -35,58 +35,53 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    
-    @Operation(summary = "Obtener todos los usuarios", 
-              description = "Retorna una lista de todos los usuarios registrados en el sistema")
+    @Operation(summary = "Obtener todos los usuarios", description = "Retorna una lista de todos los usuarios registrados en el sistema")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
-        @ApiResponse(responseCode = "204", description = "No hay usuarios registrados")
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
+            @ApiResponse(responseCode = "204", description = "No hay usuarios registrados")
     })
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsuarios();
-        if(usuarios.isEmpty()){
+        if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(usuarios);
     }
 
-    @Operation(summary = "Obtener un usuario por ID", 
-              description = "Retorna un usuario específico según su ID")
+    @Operation(summary = "Obtener un usuario por ID", description = "Retorna un usuario específico según su ID")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+            @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUserById(@PathVariable Long id){
+    public ResponseEntity<Usuario> getUserById(@PathVariable Long id) {
         Usuario usuario = usuarioService.getUsuarioById(id);
-        if(usuario == null){
+        if (usuario == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(usuario);
     }
 
-    @Operation(summary = "Obtener usuarios por rol", 
-              description = "Retorna una lista de usuarios según su rol")
+    @Operation(summary = "Obtener usuarios por rol", description = "Retorna una lista de usuarios según su rol")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
-        @ApiResponse(responseCode = "204", description = "No hay usuarios con el rol especificado")
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente"),
+            @ApiResponse(responseCode = "204", description = "No hay usuarios con el rol especificado")
     })
     @GetMapping("/rol/{id}")
-    public ResponseEntity<List<Usuario>> getAllUsuariosByRol(@PathVariable Integer id){
+    public ResponseEntity<List<Usuario>> getAllUsuariosByRol(@PathVariable Integer id) {
         List<Usuario> usuarios = usuarioService.getAllUsuariosByRol(id);
-        if(usuarios.isEmpty()){
+        if (usuarios.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(usuarios);
     }
 
-    @Operation(summary = "Crear un nuevo usuario", 
-              description = "Crea un nuevo usuario en el sistema")
+    @Operation(summary = "Crear un nuevo usuario", description = "Crea un nuevo usuario en el sistema")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
-        @ApiResponse(responseCode = "403", description = "No tiene permisos para crear usuarios"),
-        @ApiResponse(responseCode = "400", description = "Error en la creación del usuario")
+            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente"),
+            @ApiResponse(responseCode = "403", description = "No tiene permisos para crear usuarios"),
+            @ApiResponse(responseCode = "400", description = "Error en la creación del usuario")
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
@@ -102,43 +97,54 @@ public class UsuarioController {
                     .body("Error al crear usuario: " + e.getMessage());
         }
     }
-
-    // Endpoint de login
+    @Operation(summary = "Iniciar sesión", description = "Inicia sesión con un usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sesión iniciada exitosamente"),
+            @ApiResponse(responseCode = "403", description = "No tiene permisos para iniciar sesión"),
+            @ApiResponse(responseCode = "500", description = "Error de servidor")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             LoginResponse response = usuarioService.login(loginRequest);
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());    
-        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al iniciar sesión: " + e.getMessage());
         }
     }
 
-    @Operation(summary = "Actualizar un usuario existente", 
-              description = "Actualiza un usuario específico en el sistema")
+    @Operation(summary = "Actualizar un usuario existente", description = "Actualiza un usuario específico en el sistema")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
-        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-public ResponseEntity<?> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-    try {
-        Usuario updatedUsuario = usuarioService.updateUsuario(id, usuario);
-        return ResponseEntity.ok(updatedUsuario);
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Error al actualizar usuario: " + e.getMessage());
+    public ResponseEntity<?> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        try {
+            Usuario updatedUsuario = usuarioService.updateUsuario(id, usuario);
+            return ResponseEntity.ok(updatedUsuario);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar usuario: " + e.getMessage());
+        }
     }
-}
+
+    @Operation(summary = "Eliminar un usuario", description = "Elimina un usuario específico en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id){
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.ok().build();
     }
