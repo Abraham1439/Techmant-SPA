@@ -53,9 +53,9 @@ public class TicketController {
         }
 
         Long idRol = usuario.getIdRol();
-        if (idRol == null || (!idRol.equals(2L) && !idRol.equals(5L))) {
+        if (idRol == null || (!idRol.equals(2L) && !idRol.equals(5L)  && !idRol.equals(4L))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Error: El usaurio no tiene permiso para crear tickets.");
+                    .body("Error: El usuario no tiene permiso para crear tickets.");
         }
         Ticket ticketGuardado = ticketService.crearTicket(ticket);
         return ResponseEntity.status(HttpStatus.CREATED).body(ticketGuardado);
