@@ -3,6 +3,7 @@ package com.techmant.Gestion_resena.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;    
@@ -29,9 +30,7 @@ import com.techmant.Gestion_resena.service.ResenaService;
 @WebMvcTest(ResenaController.class)
 public class ResenaControllerTest {
 
-    
-   
-    @Autowired
+     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -52,23 +51,35 @@ public class ResenaControllerTest {
         resena.setComentario("Muy buen servicio");
         resena.setCalificacion(5);
         resena.setFechaCreacion(fecha);
-        resena.setIdUsuario(100L); // Campo agregado
+        resena.setIdUsuario(100L);
     }
 
     @Test
-    void agregarResena_validaYCrea() throws Exception {
-        when(resenaService.crearResena(any(Resena.class))).thenReturn(resena);
+    void crearResena_exito() throws Exception {
+        when(resenaService.crearResenaConValidacion(any(Resena.class))).thenReturn(resena);
 
         mockMvc.perform(post("/api/v1/resena")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(resena)))
-                .andExpect(status().isCreated()) // Cambiar a 201
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/resena/1"))
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"))
                 .andExpect(jsonPath("$.calificacion").value(5));
     }
 
     @Test
-    void listarResenas_retornaLista() throws Exception {
+    void crearResena_usuarioNoValido_badRequest() throws Exception {
+        when(resenaService.crearResenaConValidacion(any(Resena.class)))
+            .thenThrow(new RuntimeException("Usuario no encontrado. No se puede crear la reseña."));
+
+        mockMvc.perform(post("/api/v1/resena")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(resena)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void listarResenas_exito() throws Exception {
         List<Resena> lista = Arrays.asList(resena);
         when(resenaService.obtenerTodasLasResenas()).thenReturn(lista);
 
@@ -79,7 +90,7 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void obtenerResenaPorId_existe_retornaResena() throws Exception {
+    void obtenerResenaPorId_existe() throws Exception {
         when(resenaService.obtenerResenaPorId(1L)).thenReturn(resena);
 
         mockMvc.perform(get("/api/v1/resena/1"))
@@ -89,13 +100,21 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void modificarResena_validaYActualiza() throws Exception {
+    void obtenerResenaPorId_noExiste_notFound() throws Exception {
+        when(resenaService.obtenerResenaPorId(99L)).thenReturn(null);
+
+        mockMvc.perform(get("/api/v1/resena/99"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void actualizarResena_exito() throws Exception {
         Resena resenaActualizada = new Resena();
         resenaActualizada.setIdResena(1L);
         resenaActualizada.setComentario("Servicio actualizado");
         resenaActualizada.setCalificacion(4);
         resenaActualizada.setFechaCreacion(resena.getFechaCreacion());
-        resenaActualizada.setIdUsuario(100L); // Campo agregado
+        resenaActualizada.setIdUsuario(100L);
 
         when(resenaService.actualizarResena(anyLong(), any(Resena.class)))
                 .thenReturn(resenaActualizada);
@@ -109,21 +128,33 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void eliminarResena_existe_eliminaCorrectamente() throws Exception {
+    void actualizarResena_noExiste_notFound() throws Exception {
+        when(resenaService.actualizarResena(anyLong(), any(Resena.class)))
+            .thenReturn(null);
+
+        Resena resenaParaActualizar = new Resena();
+        resenaParaActualizar.setComentario("Actualización");
+
+        mockMvc.perform(put("/api/v1/resena/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(resenaParaActualizar)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void eliminarResena_existe_noContent() throws Exception {
         when(resenaService.obtenerResenaPorId(1L)).thenReturn(resena);
         doNothing().when(resenaService).eliminarResena(1L);
 
         mockMvc.perform(delete("/api/v1/resena/1"))
-                .andExpect(status().isNoContent()); // Cambiado a 204
+                .andExpect(status().isNoContent());
     }
 
-   @Test
-    void eliminarResena_noExiste_retorna404() throws Exception {
-    // Simula que la reseña no existe
-    when(resenaService.obtenerResenaPorId(1L)).thenReturn(null);
+    @Test
+    void eliminarResena_noExiste_notFound() throws Exception {
+        when(resenaService.obtenerResenaPorId(99L)).thenReturn(null);
 
-    // Realiza la solicitud de eliminación
-    mockMvc.perform(delete("/api/v1/resena/1"))
-            .andExpect(status().isNotFound()); // Verifica que se devuelve 404
+        mockMvc.perform(delete("/api/v1/resena/99"))
+                .andExpect(status().isNotFound());
     }
 }

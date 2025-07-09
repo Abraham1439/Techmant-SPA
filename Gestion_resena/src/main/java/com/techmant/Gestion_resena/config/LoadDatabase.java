@@ -31,7 +31,7 @@ public class LoadDatabase {
                         "Excelente servicio, lo recomiendo 100%.",
                         5,
                         fecha1,
-                        3L  // cliente
+                        1L  // Tiene que tener Rol 3 para que sea un cliente
                 ));
 
                 resenaRepository.save(new Resena(
@@ -39,7 +39,7 @@ public class LoadDatabase {
                         "Muy buen trabajo, rápido y profesional.",
                         5,
                         fecha2,
-                        3L  // cliente
+                        2L  // Tiene que tener Rol 3 para que sea un cliente
                 ));
 
                 resenaRepository.save(new Resena(
@@ -47,7 +47,7 @@ public class LoadDatabase {
                         "El técnico fue muy amable y resolvió todo de inmediato.",
                         5,
                         fecha3,
-                        3L  // cliente
+                        3L  // Tiene que tener Rol 3 para que sea un cliente
                 ));
 
                 resenaRepository.save(new Resena(
@@ -55,7 +55,7 @@ public class LoadDatabase {
                         "Servicio impecable, todo quedó funcionando perfecto.",
                         4,
                         fecha4,
-                        3L  // cliente
+                        4L  // Tiene que tener Rol 3 para que sea un cliente
                 ));
 
                 resenaRepository.save(new Resena(
@@ -63,7 +63,7 @@ public class LoadDatabase {
                         "Gran experiencia, definitivamente volvería a contratar.",
                         5,
                         fecha5,
-                        3L  // cliente
+                        5L  // Tiene que tener Rol 3 para que sea un cliente
                 ));
 
                 System.out.println("Reseñas de cliente precargadas exitosamente.");

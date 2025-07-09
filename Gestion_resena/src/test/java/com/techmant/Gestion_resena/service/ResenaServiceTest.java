@@ -16,23 +16,29 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Map;
+import java.util.Collections;
+import com.techmant.Gestion_resena.model.Resena;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.techmant.Gestion_resena.model.Resena;
 import com.techmant.Gestion_resena.repository.ResenaRepository;
+import com.techmant.Gestion_resena.webusuario.UsuarioCat;
 
 @ExtendWith(MockitoExtension.class)
 public class ResenaServiceTest {
 
-      @Mock
+  @Mock
     private ResenaRepository resenaRepository;
+
+    @Mock
+    private UsuarioCat usuarioCat;
 
     @InjectMocks
     private ResenaService resenaService;
@@ -47,14 +53,37 @@ public class ResenaServiceTest {
     }
 
     @Test
-    void crearResena_devuelveResenaGuardada() {
+    void crearResenaConValidacion_usuarioExiste_devuelveResena() {
+        when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Map.of("id", 100L, "nombre", "Sebas"));
         when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
 
-        Resena resultado = resenaService.crearResena(resena);
+        Resena resultado = resenaService.crearResenaConValidacion(resena);
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
-        verify(resenaRepository).save(resena);
+        verify(usuarioCat).obtenerUsuarioPorId(100L);
+
+        ArgumentCaptor<Resena> captor = ArgumentCaptor.forClass(Resena.class);
+        verify(resenaRepository).save(captor.capture());
+
+        Resena guardada = captor.getValue();
+        assertEquals(resena.getComentario(), guardada.getComentario());
+        assertEquals(resena.getIdUsuario(), guardada.getIdUsuario());
+        assertEquals(resena.getCalificacion(), guardada.getCalificacion());
+        assertEquals(resena.getFechaCreacion(), guardada.getFechaCreacion());
+    }
+
+    @Test
+    void crearResenaConValidacion_usuarioNoExiste_lanzaExcepcion() {
+        when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Collections.emptyMap());
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
+            resenaService.crearResenaConValidacion(resena);
+        });
+
+        assertEquals("Usuario no encontrado. No se puede crear la reseña.", ex.getMessage());
+        verify(usuarioCat).obtenerUsuarioPorId(100L);
+        verify(resenaRepository, never()).save(any());
     }
 
     @Test

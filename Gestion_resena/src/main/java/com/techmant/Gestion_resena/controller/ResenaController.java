@@ -43,10 +43,18 @@ public class ResenaController {
     
     @PostMapping
     public ResponseEntity<Resena> crearResena(@RequestBody Resena resena) {
-        Resena nueva = resenaService.crearResena(resena);
+    try {
+        Resena nueva = resenaService.crearResenaConValidacion(resena);
         URI location = URI.create("/api/v1/resena/" + nueva.getIdResena());
         return ResponseEntity.created(location).body(nueva);
+    } catch (RuntimeException e) {
+        // Error cuando el usuario no existe u otro error controlado
+        return ResponseEntity.badRequest().body(null);
+    } catch (Exception e) {
+        // Cualquier otro error inesperado
+        return ResponseEntity.status(500).body(null);
     }
+}
 
     @Operation(
         summary = "Obtener todas las reseñas",

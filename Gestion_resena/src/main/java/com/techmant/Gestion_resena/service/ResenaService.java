@@ -1,22 +1,35 @@
 package com.techmant.Gestion_resena.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.techmant.Gestion_resena.model.Resena;
 import com.techmant.Gestion_resena.repository.ResenaRepository;
+import com.techmant.Gestion_resena.webusuario.UsuarioCat;
 
 @Service
 public class ResenaService {
     @Autowired
     private ResenaRepository resenaRepository;
+    
+    @Autowired
+    private UsuarioCat usuarioCat;
 
-    // Crear una nueva resena
-    public Resena crearResena(Resena resena) {
-        return resenaRepository.save(resena);
+    // Crear una nueva reseña con validación del usuario desde microservicio
+    public Resena crearResenaConValidacion(Resena resena) {
+    // Validar que el usuario existe consultando al microservicio
+    Map<String, Object> usuario = usuarioCat.obtenerUsuarioPorId(resena.getIdUsuario());
+    
+    if (usuario == null || usuario.isEmpty()) {
+        throw new RuntimeException("Usuario no encontrado. No se puede crear la reseña.");
     }
+
+    // Si el usuario existe, se guarda la reseña
+    return resenaRepository.save(resena);
+}
 
     // Obtener todas las resenas
     public List<Resena> obtenerTodasLasResenas() {
