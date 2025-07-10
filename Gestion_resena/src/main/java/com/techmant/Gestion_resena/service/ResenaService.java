@@ -40,8 +40,11 @@ public class ResenaService {
         return resenaRepository.save(nuevaResena);
     }
 
-    // Método para eliminar una reseña mediante el ID
+    // Método para eliminar una reseña mediante el ID con validación
     public void eliminarResena(Long id) {
+        if (!resenaRepository.existsById(id)) {
+            throw new RuntimeException("Resena no encontrada con el ID: " + id);
+        }
         resenaRepository.deleteById(id);
     }
 }

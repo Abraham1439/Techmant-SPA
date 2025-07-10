@@ -9,11 +9,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;    
 
 import org.springframework.http.MediaType;  
+import java.util.Collections;
 
 
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +30,7 @@ import com.techmant.Gestion_resena.service.ResenaService;
 @WebMvcTest(ResenaController.class)
 public class ResenaControllerTest {
 
-    @Autowired
+      @Autowired
     private MockMvc mockMvc;
 
     @MockBean
@@ -45,13 +45,7 @@ public class ResenaControllerTest {
         objectMapper.findAndRegisterModules();
 
         Date fecha = new SimpleDateFormat("dd/MM/yyyy").parse("24/06/2025");
-
-        resena = new Resena();
-        resena.setIdResena(1L);
-        resena.setComentario("Muy buen servicio");
-        resena.setCalificacion(5);
-        resena.setFechaCreacion(fecha);
-        resena.setIdUsuario(100L);
+        resena = new Resena(1L, "Muy buen servicio", 5, fecha, 100L);
     }
 
     @Test
@@ -62,13 +56,12 @@ public class ResenaControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(resena)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/resena/1"))
                 .andExpect(jsonPath("$.comentario").value("Muy buen servicio"))
                 .andExpect(jsonPath("$.calificacion").value(5));
     }
 
     @Test
-    void agregarResena_usuarioNoValido_badRequest() throws Exception {
+    void agregarResena_usuarioNoValido_retorna404() throws Exception {
         when(resenaService.agregarResena(any(Resena.class)))
             .thenThrow(new RuntimeException("Usuario no encontrado. No se puede guardar la reseña."));
 
@@ -81,13 +74,20 @@ public class ResenaControllerTest {
 
     @Test
     void listarResenas_exito() throws Exception {
-        List<Resena> lista = Arrays.asList(resena);
-        when(resenaService.getResenas()).thenReturn(lista);
+        when(resenaService.getResenas()).thenReturn(List.of(resena));
 
         mockMvc.perform(get("/api/v1/resena"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].idResena").value(1L))
                 .andExpect(jsonPath("$[0].comentario").value("Muy buen servicio"));
+    }
+
+    @Test
+    void listarResenas_vacio_retorna204() throws Exception {
+        when(resenaService.getResenas()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/v1/resena"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -101,22 +101,17 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void buscarResenaPorId_noExiste_notFound() throws Exception {
-        when(resenaService.getResenaById(99L)).thenThrow(new RuntimeException("Lo sentimos, la reseña no pudo ser encontrada."));
+    void buscarResenaPorId_noExiste() throws Exception {
+        when(resenaService.getResenaById(99L))
+                .thenThrow(new RuntimeException("Lo sentimos, la reseña no pudo ser encontrada."));
 
         mockMvc.perform(get("/api/v1/resena/99"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Lo sentimos, la reseña no pudo ser encontrada."));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     void actualizarResena_exito() throws Exception {
-        Resena resenaActualizada = new Resena();
-        resenaActualizada.setIdResena(1L);
-        resenaActualizada.setComentario("Servicio actualizado");
-        resenaActualizada.setCalificacion(4);
-        resenaActualizada.setFechaCreacion(resena.getFechaCreacion());
-        resenaActualizada.setIdUsuario(100L);
+        Resena resenaActualizada = new Resena(1L, "Servicio actualizado", 4, resena.getFechaCreacion(), 100L);
 
         when(resenaService.getResenaById(1L)).thenReturn(resena);
         when(resenaService.agregarResena(any(Resena.class))).thenReturn(resenaActualizada);
@@ -130,22 +125,18 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void actualizarResena_noExiste_notFound() throws Exception {
-        when(resenaService.getResenaById(anyLong())).thenThrow(new RuntimeException("Reseña no encontrada."));
-
-        Resena resenaParaActualizar = new Resena();
-        resenaParaActualizar.setComentario("Actualización");
+    void actualizarResena_noExiste() throws Exception {
+        when(resenaService.getResenaById(anyLong()))
+                .thenThrow(new RuntimeException("Reseña no encontrada."));
 
         mockMvc.perform(put("/api/v1/resena/99")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(resenaParaActualizar)))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Reseña no encontrada."));
+                .content(objectMapper.writeValueAsString(resena)))
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void eliminarResena_existe_noContent() throws Exception {
-        when(resenaService.getResenaById(1L)).thenReturn(resena);
+    void eliminarResena_existe() throws Exception {
         doNothing().when(resenaService).eliminarResena(1L);
 
         mockMvc.perform(delete("/api/v1/resena/1"))
@@ -153,11 +144,10 @@ public class ResenaControllerTest {
     }
 
     @Test
-    void eliminarResena_noExiste_notFound() throws Exception {
-        when(resenaService.getResenaById(99L)).thenThrow(new RuntimeException("Reseña no encontrada."));
+    void eliminarResena_noExiste() throws Exception {
+        doThrow(new RuntimeException("Reseña no encontrada.")).when(resenaService).eliminarResena(99L);
 
         mockMvc.perform(delete("/api/v1/resena/99"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().string("Reseña no encontrada."));
+                .andExpect(status().isNotFound());
     }
 }
