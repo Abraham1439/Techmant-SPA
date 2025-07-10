@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Modelo que representa un equipo en el sistema")
+@Schema(description = "Modelo que representa un equipo en el sistema, los ids no se envian, se envian los correos")
 public class Equipos {
 
     @Id
