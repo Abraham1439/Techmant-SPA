@@ -28,7 +28,7 @@ public class LoadDataBase {
                     ag1.setEstado("pendiente");
                     ag1.setFechaCita(fecha1);
                     ag1.setObservaciones("Instalación urgente");
-                    ag1.setIdUsuario(1L); //este ID debe existir en el microservicio de Usuario sino f 
+                    ag1.setIdUsuario(3L); //este ID debe existir en el microservicio de Usuario sino f 
                     agendamientoService.agregarAgendamiento(ag1);
 
                     System.out.println("Asignación precargada correctamente.");
