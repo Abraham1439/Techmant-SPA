@@ -1,6 +1,7 @@
 package com.TechMant.usuario.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -149,4 +150,20 @@ public class UsuarioController {
         usuarioService.deleteUsuario(id);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Obtener un usuario por correo", description = "Retorna un usuario específico según su correo")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
+    @GetMapping("/correo/{correo}")
+public ResponseEntity<Usuario> getUsuarioByCorreo(@PathVariable String correo) {
+    Optional<Usuario> usuarioOpt = usuarioService.findByCorreo(correo);
+    if (usuarioOpt.isPresent()) {
+        Usuario usuario = usuarioOpt.get();
+        usuario.setPassword(null); // No devolver contraseña
+        return ResponseEntity.ok(usuario);
+    }
+    return ResponseEntity.notFound().build();
+}
 }

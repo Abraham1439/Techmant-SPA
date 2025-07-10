@@ -72,16 +72,21 @@ public class TicketControllerTest {
 
     @Test
     void createTicket_usuarioSinPermiso_retornaForbidden() throws Exception {
-        // Usuario con rol no permitido
-        usuario.setIdRol(3L); // Rol diferente de 2 o 5
+        // Seteo usuario con rol no permitido
+        usuario.setIdRol(3L);
 
+        // Seteo el usuarioId en el ticket para que el controlador pueda usarlo
+        ticket.setUsuarioId(16L);
+
+        // Mockear llamada al cliente para obtener usuario
         when(usuarioClient.getUsuarioById(16L)).thenReturn(usuario);
 
+        // Ejecutar petición POST para crear ticket
         mockMvc.perform(post("/api/v1/tickets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ticket)))
                 .andExpect(status().isForbidden())
-                .andExpect(content().string("Error: El usaurio no tiene permiso para crear tickets."));
+                .andExpect(content().string("Error: El usuario no tiene permiso para crear tickets."));
     }
 
     @Test

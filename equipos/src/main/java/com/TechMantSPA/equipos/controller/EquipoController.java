@@ -1,13 +1,16 @@
 package com.TechMantSPA.equipos.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.TechMantSPA.equipos.dto.EquipoRequestDTO;
 import com.TechMantSPA.equipos.dto.EquipoResponseDTO;
+import com.TechMantSPA.equipos.dto.PropietarioDTO;
 import com.TechMantSPA.equipos.dto.UsuarioDTO;
 import com.TechMantSPA.equipos.model.Equipos;
 import com.TechMantSPA.equipos.services.EquipoServices;
@@ -36,13 +39,39 @@ public class EquipoController {
             @ApiResponse(responseCode = "204", description = "No hay equipos registrados")
     })
     @GetMapping
-    public ResponseEntity<List<Equipos>> getAll() {
-        List<Equipos> equipos = equipoServices.getAllEquipos();
-        if (equipos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(equipos);
+    public ResponseEntity<List<EquipoResponseDTO>> getAll() {
+    List<Equipos> equipos = equipoServices.getAllEquipos();
+
+    if (equipos.isEmpty()) {
+        return ResponseEntity.noContent().build();
     }
+
+    List<EquipoResponseDTO> responseList = equipos.stream().map(equipo -> {
+        UsuarioDTO propietario = usuarioClient.getUsuarioById(equipo.getIdDuenoEquipo());
+        UsuarioDTO usuarioRegistro = usuarioClient.getUsuarioById(equipo.getIdUsuarioRegistro());
+
+        PropietarioDTO propietarioDTO = propietario != null
+            ? new PropietarioDTO(propietario.getIdUsuario(), propietario.getNombre(), propietario.getCorreo())
+            : null;
+
+        PropietarioDTO registroDTO = usuarioRegistro != null
+            ? new PropietarioDTO(usuarioRegistro.getIdUsuario(), usuarioRegistro.getNombre(), usuarioRegistro.getCorreo())
+            : null;
+
+        EquipoResponseDTO dto = new EquipoResponseDTO();
+        dto.setIdEquipo(equipo.getIdEquipo());
+        dto.setTipoDeDispositivo(equipo.getTipoDeDispositivo());
+        dto.setMarca(equipo.getMarca());
+        dto.setNroSerie(equipo.getNroSerie());
+        dto.setDescripcion(equipo.getDescripcion());
+        dto.setPropietario(propietarioDTO);
+        dto.setUsuarioRegistro(registroDTO);
+
+        return dto;
+    }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(responseList);
+}
 
     @Operation(summary = "Obtener un equipo por ID", description = "Retorna un equipo específico por su ID")
     @ApiResponses(value = {
@@ -50,45 +79,47 @@ public class EquipoController {
             @ApiResponse(responseCode = "404", description = "Equipo no encontrado")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEquipoById(@PathVariable Long id) {
-        Equipos equipo = equipoServices.getEquipoById(id);
-        if (equipo == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        UsuarioDTO propietario = usuarioClient.getUsuarioById(equipo.getIdDuenoEquipo());
-        if (propietario == null) {
-            return ResponseEntity.badRequest().body("El propietario no existe.");
-        }
-
-        UsuarioDTO usuarioRegistro = usuarioClient.getUsuarioById(equipo.getIdUsuarioRegistro());
-        if (usuarioRegistro == null) {
-            return ResponseEntity.badRequest().body("El usuario que registró no existe.");
-        }
-
-        EquipoResponseDTO response = new EquipoResponseDTO();
-        response.setIdEquipo(equipo.getIdEquipo());
-        response.setTipoDeDispositivo(equipo.getTipoDeDispositivo());
-        response.setMarca(equipo.getMarca());
-        response.setNroSerie(equipo.getNroSerie());
-        response.setDescripcion(equipo.getDescripcion());
-
-        // Propietario
-        EquipoResponseDTO.UsuarioInfo propietarioInfo = new EquipoResponseDTO.UsuarioInfo();
-        propietarioInfo.setIdUsuario(propietario.getIdUsuario());
-        propietarioInfo.setNombre(propietario.getNombre());
-        propietarioInfo.setCorreo(propietario.getCorreo());
-        response.setPropietario(propietarioInfo);
-
-        // Usuario que registró
-        EquipoResponseDTO.UsuarioInfo registroInfo = new EquipoResponseDTO.UsuarioInfo();
-        registroInfo.setIdUsuario(usuarioRegistro.getIdUsuario());
-        registroInfo.setNombre(usuarioRegistro.getNombre());
-        registroInfo.setCorreo(usuarioRegistro.getCorreo());
-        response.setUsuarioRegistro(registroInfo);
-
-        return ResponseEntity.ok(response);
+public ResponseEntity<?> getEquipoById(@PathVariable Long id) {
+    Equipos equipo = equipoServices.getEquipoById(id);
+    if (equipo == null) {
+        return ResponseEntity.notFound().build();
     }
+
+    UsuarioDTO propietario = usuarioClient.getUsuarioById(equipo.getIdDuenoEquipo());
+    if (propietario == null) {
+        return ResponseEntity.badRequest().body("El propietario no existe.");
+    }
+
+    UsuarioDTO usuarioRegistro = usuarioClient.getUsuarioById(equipo.getIdUsuarioRegistro());
+    if (usuarioRegistro == null) {
+        return ResponseEntity.badRequest().body("El usuario que registró no existe.");
+    }
+
+    EquipoResponseDTO response = new EquipoResponseDTO();
+    response.setIdEquipo(equipo.getIdEquipo());
+    response.setTipoDeDispositivo(equipo.getTipoDeDispositivo());
+    response.setMarca(equipo.getMarca());
+    response.setNroSerie(equipo.getNroSerie());
+    response.setDescripcion(equipo.getDescripcion());
+
+    // Propietario
+    PropietarioDTO propietarioInfo = new PropietarioDTO(
+            propietario.getIdUsuario(),
+            propietario.getNombre(),
+            propietario.getCorreo()
+    );
+    response.setPropietario(propietarioInfo);
+
+    // Usuario que registró
+    PropietarioDTO registroInfo = new PropietarioDTO(
+            usuarioRegistro.getIdUsuario(),
+            usuarioRegistro.getNombre(),
+            usuarioRegistro.getCorreo()
+    );
+    response.setUsuarioRegistro(registroInfo);
+
+    return ResponseEntity.ok(response);
+}
 
     @Operation(summary = "Obtener equipos por tipo", description = "Retorna una lista de equipos filtrados por tipo")
     @ApiResponses(value = {
@@ -127,53 +158,64 @@ public class EquipoController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public ResponseEntity<?> createEquipo(@RequestBody Equipos equipo) {
-        // ✅ Validar propietario
-        UsuarioDTO propietario = usuarioClient.getUsuarioById(equipo.getIdDuenoEquipo());
-        if (propietario == null) {
-            return ResponseEntity.badRequest().body("El propietario no existe.");
-        }
-        if (propietario.getIdRol() != 3L) {
-            return ResponseEntity.badRequest().body("El propietario debe tener rol Cliente.");
-        }
-
-        // ✅ Validar usuario que registra
-        UsuarioDTO usuarioRegistro = usuarioClient.getUsuarioById(equipo.getIdUsuarioRegistro());
-        if (usuarioRegistro == null) {
-            return ResponseEntity.badRequest().body("El usuario que registra no existe.");
-        }
-        if (!List.of(1L, 2L, 3L, 4L, 5L).contains(usuarioRegistro.getIdRol())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Rol no autorizado para registrar equipos.");
-        }
-
-        // ✅ Guardar equipo
-        Equipos nuevoEquipo = equipoServices.createEquipo(equipo);
-
-        // ✅ Preparar response con estructura anidada
-        EquipoResponseDTO response = new EquipoResponseDTO();
-        response.setIdEquipo(nuevoEquipo.getIdEquipo());
-        response.setTipoDeDispositivo(nuevoEquipo.getTipoDeDispositivo());
-        response.setMarca(nuevoEquipo.getMarca());
-        response.setNroSerie(nuevoEquipo.getNroSerie());
-        response.setDescripcion(nuevoEquipo.getDescripcion());
-
-        // Sub-objeto propietario
-        EquipoResponseDTO.UsuarioInfo propietarioInfo = new EquipoResponseDTO.UsuarioInfo();
-        propietarioInfo.setIdUsuario(propietario.getIdUsuario());
-        propietarioInfo.setNombre(propietario.getNombre());
-        propietarioInfo.setCorreo(propietario.getCorreo());
-        response.setPropietario(propietarioInfo);
-
-        // Sub-objeto usuarioRegistro
-        EquipoResponseDTO.UsuarioInfo registroInfo = new EquipoResponseDTO.UsuarioInfo();
-        registroInfo.setIdUsuario(usuarioRegistro.getIdUsuario());
-        registroInfo.setNombre(usuarioRegistro.getNombre());
-        registroInfo.setCorreo(usuarioRegistro.getCorreo());
-        response.setUsuarioRegistro(registroInfo);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+public ResponseEntity<?> createEquipo(@RequestBody EquipoRequestDTO equipoRequest) {
+    // 1. Validar y obtener usuario propietario por correo
+    UsuarioDTO propietario = usuarioClient.getUsuarioByCorreo(equipoRequest.getCorreoDuenoEquipo());
+    if (propietario == null) {
+        return ResponseEntity.badRequest().body("El correo no existe.");
     }
+    if (propietario.getIdRol() != 3L) { // validar rol cliente
+        return ResponseEntity.badRequest().body("El propietario debe tener rol Cliente.");
+    }
+
+    // 2. Validar y obtener usuario que registra por correo
+    UsuarioDTO usuarioRegistro = usuarioClient.getUsuarioByCorreo(equipoRequest.getCorreoUsuarioRegistro());
+    if (usuarioRegistro == null) {
+        return ResponseEntity.badRequest().body("El usuario que registra no existe.");
+    }
+    if (!List.of(1L, 2L, 3L, 4L, 5L).contains(usuarioRegistro.getIdRol())) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Rol no autorizado para registrar equipos.");
+    }
+
+    // 3. Crear objeto Equipos con IDs
+    Equipos nuevoEquipo = new Equipos();
+    nuevoEquipo.setTipoDeDispositivo(equipoRequest.getTipoDeDispositivo());
+    nuevoEquipo.setMarca(equipoRequest.getMarca());
+    nuevoEquipo.setNroSerie(equipoRequest.getNroSerie());
+    nuevoEquipo.setDescripcion(equipoRequest.getDescripcion());
+    nuevoEquipo.setIdDuenoEquipo(propietario.getIdUsuario());
+    nuevoEquipo.setIdUsuarioRegistro(usuarioRegistro.getIdUsuario());
+
+    // 4. Guardar equipo
+    Equipos equipoGuardado = equipoServices.createEquipo(nuevoEquipo);
+
+    // 5. Construir respuesta DTO
+    EquipoResponseDTO response = new EquipoResponseDTO();
+    response.setIdEquipo(equipoGuardado.getIdEquipo());
+    response.setTipoDeDispositivo(equipoGuardado.getTipoDeDispositivo());
+    response.setMarca(equipoGuardado.getMarca());
+    response.setNroSerie(equipoGuardado.getNroSerie());
+    response.setDescripcion(equipoGuardado.getDescripcion());
+
+    // Propietario DTO
+    PropietarioDTO propietarioDTO = new PropietarioDTO(
+        propietario.getIdUsuario(),
+        propietario.getNombre(),
+        propietario.getCorreo()
+    );
+    response.setPropietario(propietarioDTO);
+
+    // Usuario que registra DTO (puedes usar mismo DTO PropietarioDTO o uno distinto si tienes)
+    PropietarioDTO registroDTO = new PropietarioDTO(
+        usuarioRegistro.getIdUsuario(),
+        usuarioRegistro.getNombre(),
+        usuarioRegistro.getCorreo()
+    );
+    response.setUsuarioRegistro(registroDTO);
+
+    // 6. Retornar respuesta con CREATED
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+}
 
     @Operation(summary = "Actualizar un equipo existente", description = "Actualiza los datos de un equipo por su ID")
     @ApiResponses(value = {

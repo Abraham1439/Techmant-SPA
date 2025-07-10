@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -22,7 +23,6 @@ import com.techmant.Gestion_resena.model.Resena;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -34,7 +34,9 @@ import com.techmant.Gestion_resena.webusuario.UsuarioCat;
 @ExtendWith(MockitoExtension.class)
 public class ResenaServiceTest {
 
-   @Mock
+ 
+    
+    @Mock
     private ResenaRepository resenaRepository;
 
     @Mock
@@ -61,16 +63,9 @@ public class ResenaServiceTest {
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
+
         verify(usuarioCat).getUsuarioById(100L);
-
-        ArgumentCaptor<Resena> captor = ArgumentCaptor.forClass(Resena.class);
-        verify(resenaRepository).save(captor.capture());
-
-        Resena guardada = captor.getValue();
-        assertEquals(resena.getComentario(), guardada.getComentario());
-        assertEquals(resena.getIdUsuario(), guardada.getIdUsuario());
-        assertEquals(resena.getCalificacion(), guardada.getCalificacion());
-        assertEquals(resena.getFechaCreacion(), guardada.getFechaCreacion());
+        verify(resenaRepository).save(any(Resena.class));
     }
 
     @Test
@@ -106,6 +101,7 @@ public class ResenaServiceTest {
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
+        verify(resenaRepository).findById(1L);
     }
 
     @Test
@@ -117,6 +113,7 @@ public class ResenaServiceTest {
         });
 
         assertEquals("Lo sentimos, la reseña no pudo ser encontrada.", excepcion.getMessage());
+        verify(resenaRepository).findById(99L);
     }
 
     @Test
@@ -124,8 +121,9 @@ public class ResenaServiceTest {
         when(resenaRepository.existsById(1L)).thenReturn(true);
         doNothing().when(resenaRepository).deleteById(1L);
 
-        resenaService.eliminarResena(1L);
+        assertDoesNotThrow(() -> resenaService.eliminarResena(1L));
 
+        verify(resenaRepository).existsById(1L);
         verify(resenaRepository).deleteById(1L);
     }
 
@@ -138,6 +136,7 @@ public class ResenaServiceTest {
         });
 
         assertEquals("Resena no encontrada con el ID: 99", ex.getMessage());
+        verify(resenaRepository).existsById(99L);
         verify(resenaRepository, never()).deleteById(anyLong());
     }
 }

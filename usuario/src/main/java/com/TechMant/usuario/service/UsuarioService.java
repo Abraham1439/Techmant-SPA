@@ -104,4 +104,9 @@ public class UsuarioService {
         usuarioRepository.delete(existingUsuario);
     }
 
+    // Traer usuario por correo
+    public Optional<Usuario> findByCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo);
+    }
+
 }

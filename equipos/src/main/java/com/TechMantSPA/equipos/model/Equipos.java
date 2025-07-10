@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Modelo que representa un equipo en el sistema")
+@Schema(description = "Modelo que representa un equipo en el sistema, los ids no se envian, se envian los correos")
 public class Equipos {
 
     @Id
@@ -44,5 +44,11 @@ public class Equipos {
 
     @Column(name="id_dueno_equipo")
     private Long idDuenoEquipo;
+
+    @Column(name="correo_usuario_registro")
+private String correoUsuarioRegistro;
+
+@Column(name="correo_dueno_equipo")
+private String correoDuenoEquipo;
     
 }

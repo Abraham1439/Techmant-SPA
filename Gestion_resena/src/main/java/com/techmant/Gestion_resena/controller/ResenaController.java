@@ -69,10 +69,14 @@ public class ResenaController {
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Resena> buscarResenaPorId(@PathVariable Long id) {
-        Resena resena = resenaService.getResenaById(id);
-        return ResponseEntity.ok(resena);
-    }
+    public ResponseEntity<?> buscarResenaPorId(@PathVariable Long id) {
+        try {
+            Resena resena = resenaService.getResenaById(id);
+            return ResponseEntity.ok(resena);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+}
 
     // Endpoint para eliminar una reseña mediante su ID
     @Operation(summary = "Eliminar reseña", description = "Elimina una reseña existente por su ID")

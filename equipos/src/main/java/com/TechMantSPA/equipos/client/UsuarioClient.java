@@ -31,4 +31,17 @@ public class UsuarioClient {
         }
     }
 
+    public UsuarioDTO getUsuarioByCorreo(String correo) {
+        try {
+            String url = USUARIO_SERVICE_URL + "/correo/" + correo;
+            return restTemplate.getForObject(url, UsuarioDTO.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            System.out.println("Usuario no encontrado con correo: " + correo);
+            return null;
+        } catch (HttpClientErrorException | ResourceAccessException e) {
+            System.out.println("Error al obtener usuario: " + e.getMessage());
+            return null;
+        }
+    }
+
 }

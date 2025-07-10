@@ -1,6 +1,7 @@
 package com.TechMantSPA.equipos.controller;
 
 import com.TechMantSPA.equipos.client.UsuarioClient;
+import com.TechMantSPA.equipos.dto.EquipoRequestDTO;
 import com.TechMantSPA.equipos.dto.UsuarioDTO;
 import com.TechMantSPA.equipos.model.Equipos;
 import com.TechMantSPA.equipos.services.EquipoServiceTest;
@@ -132,16 +133,26 @@ public class EquipoControllerTest {
     }
 
     @Test
-    void createEquipo_success() throws Exception {
-        when(usuarioClient.getUsuarioById(2L)).thenReturn(propietario);
-        when(usuarioClient.getUsuarioById(3L)).thenReturn(usuarioRegistro);
-        when(equipoServices.createEquipo(Mockito.any())).thenReturn(equipo);
+void createEquipo_success() throws Exception {
+    // Simular respuestas del cliente por correo
+    when(usuarioClient.getUsuarioByCorreo("cliente@example.com")).thenReturn(propietario);
+    when(usuarioClient.getUsuarioByCorreo("tecnico@example.com")).thenReturn(usuarioRegistro);
+    when(equipoServices.createEquipo(Mockito.any())).thenReturn(equipo);
 
-        mockMvc.perform(post("/api/v1/equipos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(equipo)))
-                .andExpect(status().isCreated());
-    }
+    // Crear el DTO que se enviará en el body
+    EquipoRequestDTO equipoRequest = new EquipoRequestDTO();
+    equipoRequest.setTipoDeDispositivo("Laptop");
+    equipoRequest.setMarca("Dell");
+    equipoRequest.setNroSerie("ABC123456");
+    equipoRequest.setDescripcion("Laptop Dell XPS 15, 16GB RAM, 512GB SSD");
+    equipoRequest.setCorreoDuenoEquipo("cliente@example.com");
+    equipoRequest.setCorreoUsuarioRegistro("tecnico@example.com");
+
+    mockMvc.perform(post("/api/v1/equipos")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(equipoRequest)))
+            .andExpect(status().isCreated());
+}
 
     @Test
     void createEquipo_propietarioInvalido() throws Exception {
