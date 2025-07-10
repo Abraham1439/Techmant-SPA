@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.TechMantSPA.equipos.dto.EquipoResponseDTO;
-import com.TechMantSPA.equipos.dto.PropietarioDTO;
 import com.TechMantSPA.equipos.dto.UsuarioDTO;
 import com.TechMantSPA.equipos.model.Equipos;
 import com.TechMantSPA.equipos.services.EquipoServices;
