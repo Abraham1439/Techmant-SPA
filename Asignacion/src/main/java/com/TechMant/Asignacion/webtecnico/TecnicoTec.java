@@ -19,7 +19,7 @@ public class TecnicoTec {
 
     //metodo para comunicarnos con el microservicio de una categoria y buscar  si una categoria existe mediante su id 
     public Map<String, Object> obtenerTecnicoPorId(Long id) {
-        return this.webclient.get().uri("/{id}", id).retrieve().onStatus(status -> status.is4xxClientError() , response -> response.bodyToMono(String.class).map(body -> new RuntimeException("Tecnico no encontrado"))).bodyToMono(Map.class).block();
+        return this.webclient.get().uri("/{id}", id).retrieve().onStatus(status -> status.is4xxClientError(), response -> response.bodyToMono(String.class).map(body -> new RuntimeException("Tecnico no encontrado"))).bodyToMono(Map.class).block();
     }
 
 }
