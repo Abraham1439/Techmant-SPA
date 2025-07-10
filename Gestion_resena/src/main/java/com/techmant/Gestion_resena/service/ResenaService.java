@@ -32,7 +32,7 @@ public class ResenaService {
     // Método para crear una nueva reseña con validación del usuario
     public Resena agregarResena(Resena nuevaResena) {
         // Validar que el usuario existe consultando al microservicio
-        Map<String, Object> usuario = usuarioCat.obtenerUsuarioPorId(nuevaResena.getIdUsuario());
+        Map<String, Object> usuario = usuarioCat.getUsuarioById(nuevaResena.getIdUsuario());
         if (usuario == null || usuario.isEmpty()) {
             throw new RuntimeException("Usuario no encontrado. No se puede guardar la reseña.");
         }
@@ -40,8 +40,11 @@ public class ResenaService {
         return resenaRepository.save(nuevaResena);
     }
 
-    // Método para eliminar una reseña mediante el ID
+    // Método para eliminar una reseña mediante el ID con validación
     public void eliminarResena(Long id) {
+        if (!resenaRepository.existsById(id)) {
+            throw new RuntimeException("Resena no encontrada con el ID: " + id);
+        }
         resenaRepository.deleteById(id);
     }
 }

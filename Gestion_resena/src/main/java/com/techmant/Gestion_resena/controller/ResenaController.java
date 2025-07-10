@@ -51,6 +51,7 @@ public class ResenaController {
         @ApiResponse(responseCode = "201", description = "Reseña creada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
+    
     @PostMapping
     public ResponseEntity<?> agregarResena(@RequestBody Resena nuevaResena) {
         try {
@@ -68,10 +69,14 @@ public class ResenaController {
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Resena> buscarResenaPorId(@PathVariable Long id) {
-        Resena resena = resenaService.getResenaById(id);
-        return ResponseEntity.ok(resena);
-    }
+    public ResponseEntity<?> buscarResenaPorId(@PathVariable Long id) {
+        try {
+            Resena resena = resenaService.getResenaById(id);
+            return ResponseEntity.ok(resena);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+}
 
     // Endpoint para eliminar una reseña mediante su ID
     @Operation(summary = "Eliminar reseña", description = "Elimina una reseña existente por su ID")
@@ -95,6 +100,8 @@ public class ResenaController {
         @ApiResponse(responseCode = "200", description = "Reseña actualizada correctamente"),
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Resena> actualizarResena(@PathVariable Long id, @RequestBody Resena resenaActualizada) {
         try {
