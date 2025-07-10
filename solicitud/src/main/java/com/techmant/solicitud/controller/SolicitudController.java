@@ -70,7 +70,7 @@ public class SolicitudController {
     } else {
         return ResponseEntity.notFound().build();  // Aquí devuelve 404 si no existe
     }
-}
+    }
     
 
     @Operation(summary = "Actualizar una solicitud", description = "Modifica una solicitud existente según su ID.")
@@ -78,6 +78,7 @@ public class SolicitudController {
         @ApiResponse(responseCode = "200", description = "Solicitud actualizada correctamente"),
         @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
+
     @PutMapping("/{id}")
     public ResponseEntity<Solicitud> actualizarSolicitud(@PathVariable Long id, @RequestBody Solicitud solicitud) {
         try {
