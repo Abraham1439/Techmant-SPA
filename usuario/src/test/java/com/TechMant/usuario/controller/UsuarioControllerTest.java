@@ -1,10 +1,10 @@
 package com.TechMant.usuario.controller;
 
-import com.TechMant.usuario.client.RolServiceClient;
+
 import com.TechMant.usuario.config.SecurityConfig;
 import com.TechMant.usuario.dto.LoginRequest;
 import com.TechMant.usuario.dto.LoginResponse;
-import com.TechMant.usuario.dto.RolDTO;
+
 import com.TechMant.usuario.model.Usuario;
 import com.TechMant.usuario.service.UsuarioService;
 
@@ -22,7 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
+
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
