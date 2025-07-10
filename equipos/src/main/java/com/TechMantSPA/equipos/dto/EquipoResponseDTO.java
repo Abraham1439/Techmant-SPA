@@ -17,16 +17,9 @@ public class EquipoResponseDTO {
     private String marca;
     private String nroSerie;
     private String descripcion;
-    
-    private UsuarioInfo propietario;
-    private UsuarioInfo usuarioRegistro;
 
-    @Data
-    public static class UsuarioInfo{
-        private Long idUsuario;
-        private String nombre;
-        private String correo;
-    }
+    private PropietarioDTO propietario;      // Dueño del equipo
+    private PropietarioDTO usuarioRegistro;
 
 }
 

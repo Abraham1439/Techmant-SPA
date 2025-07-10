@@ -44,5 +44,11 @@ public class Equipos {
 
     @Column(name="id_dueno_equipo")
     private Long idDuenoEquipo;
+
+    @Column(name="correo_usuario_registro")
+private String correoUsuarioRegistro;
+
+@Column(name="correo_dueno_equipo")
+private String correoDuenoEquipo;
     
 }
