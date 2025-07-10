@@ -13,7 +13,7 @@ import java.util.Date;
 @Configuration
 public class LoadDatabase {
     
-         @Bean
+        @Bean
         public CommandLineRunner precargarResenas(ResenaRepository resenaRepository) {
         return args -> {
             // Comprobar si ya existen registros en la base de datos

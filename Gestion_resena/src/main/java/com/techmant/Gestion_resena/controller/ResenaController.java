@@ -51,6 +51,7 @@ public class ResenaController {
         @ApiResponse(responseCode = "201", description = "Reseña creada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
+    
     @PostMapping
     public ResponseEntity<?> agregarResena(@RequestBody Resena nuevaResena) {
         try {
@@ -95,6 +96,8 @@ public class ResenaController {
         @ApiResponse(responseCode = "200", description = "Reseña actualizada correctamente"),
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Resena> actualizarResena(@PathVariable Long id, @RequestBody Resena resenaActualizada) {
         try {

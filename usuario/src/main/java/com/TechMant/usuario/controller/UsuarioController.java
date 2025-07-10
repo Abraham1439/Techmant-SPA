@@ -54,6 +54,7 @@ public class UsuarioController {
             @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente"),
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
+    
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUserById(@PathVariable Long id) {
         Usuario usuario = usuarioService.getUsuarioById(id);

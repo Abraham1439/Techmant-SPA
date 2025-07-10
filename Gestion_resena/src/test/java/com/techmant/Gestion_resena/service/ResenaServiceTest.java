@@ -54,14 +54,14 @@ public class ResenaServiceTest {
 
     @Test
     void agregarResena_usuarioExiste_devuelveResena() {
-        when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Map.of("id", 100L, "nombre", "Sebas"));
+        when(usuarioCat.getUsuarioById(100L)).thenReturn(Map.of("id", 100L, "nombre", "Sebas"));
         when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
 
         Resena resultado = resenaService.agregarResena(resena);
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
-        verify(usuarioCat).obtenerUsuarioPorId(100L);
+        verify(usuarioCat).getUsuarioById(100L);
 
         ArgumentCaptor<Resena> captor = ArgumentCaptor.forClass(Resena.class);
         verify(resenaRepository).save(captor.capture());
@@ -75,14 +75,14 @@ public class ResenaServiceTest {
 
     @Test
     void agregarResena_usuarioNoExiste_lanzaExcepcion() {
-        when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Collections.emptyMap());
+        when(usuarioCat.getUsuarioById(100L)).thenReturn(Collections.emptyMap());
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
             resenaService.agregarResena(resena);
         });
 
         assertEquals("Usuario no encontrado. No se puede guardar la reseña.", ex.getMessage());
-        verify(usuarioCat).obtenerUsuarioPorId(100L);
+        verify(usuarioCat).getUsuarioById(100L);
         verify(resenaRepository, never()).save(any());
     }
 
