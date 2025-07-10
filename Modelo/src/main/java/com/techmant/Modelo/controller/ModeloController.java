@@ -70,7 +70,6 @@ public class ModeloController {
     @Operation(summary = "Actualizar modelo", description = "Actualiza los datos de un modelo existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Modelo actualizado correctamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Modelo no encontrado")
     })
     @PutMapping("/{id}")

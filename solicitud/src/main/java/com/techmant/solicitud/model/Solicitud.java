@@ -31,7 +31,7 @@ public class Solicitud {
     @Column(nullable = false)
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Schema(description = "Fecha en la que se realiza la solicitud", example = "24/06/2025")
-    private Date fecha_solicitud;
+    private Date fechasolicitud;
 
     @Column(nullable = true) 
     @Schema(description = "Comentario adicional que puede incluir el cliente", example = "Aumento de memoria Ram")

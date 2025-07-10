@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class TecnicoService {
+    
+    
     @Autowired
     private TecnicoRepository tecnicoRepository;
 

@@ -76,7 +76,6 @@ public class SolicitudController {
     @Operation(summary = "Actualizar una solicitud", description = "Modifica una solicitud existente según su ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Solicitud actualizada correctamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Solicitud no encontrada")
     })
     @PutMapping("/{id}")
