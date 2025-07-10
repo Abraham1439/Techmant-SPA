@@ -37,8 +37,8 @@ public class SolicitudServiceTest {
 
     private Solicitud solicitud;
 
-      @BeforeEach
-    void setUp() {
+        @BeforeEach
+        void setUp() {
         solicitud = new Solicitud(1L, new Date(), "Comentario de prueba", 100000);
     }
 

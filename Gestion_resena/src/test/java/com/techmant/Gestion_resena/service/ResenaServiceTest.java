@@ -34,7 +34,7 @@ import com.techmant.Gestion_resena.webusuario.UsuarioCat;
 @ExtendWith(MockitoExtension.class)
 public class ResenaServiceTest {
 
-  @Mock
+   @Mock
     private ResenaRepository resenaRepository;
 
     @Mock
@@ -53,11 +53,11 @@ public class ResenaServiceTest {
     }
 
     @Test
-    void crearResenaConValidacion_usuarioExiste_devuelveResena() {
+    void agregarResena_usuarioExiste_devuelveResena() {
         when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Map.of("id", 100L, "nombre", "Sebas"));
         when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
 
-        Resena resultado = resenaService.crearResenaConValidacion(resena);
+        Resena resultado = resenaService.agregarResena(resena);
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
@@ -74,24 +74,24 @@ public class ResenaServiceTest {
     }
 
     @Test
-    void crearResenaConValidacion_usuarioNoExiste_lanzaExcepcion() {
+    void agregarResena_usuarioNoExiste_lanzaExcepcion() {
         when(usuarioCat.obtenerUsuarioPorId(100L)).thenReturn(Collections.emptyMap());
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            resenaService.crearResenaConValidacion(resena);
+            resenaService.agregarResena(resena);
         });
 
-        assertEquals("Usuario no encontrado. No se puede crear la reseña.", ex.getMessage());
+        assertEquals("Usuario no encontrado. No se puede guardar la reseña.", ex.getMessage());
         verify(usuarioCat).obtenerUsuarioPorId(100L);
         verify(resenaRepository, never()).save(any());
     }
 
     @Test
-    void obtenerTodasLasResenas_devuelveLista() {
+    void getResenas_devuelveLista() {
         List<Resena> lista = Arrays.asList(resena);
         when(resenaRepository.findAll()).thenReturn(lista);
 
-        List<Resena> resultado = resenaService.obtenerTodasLasResenas();
+        List<Resena> resultado = resenaService.getResenas();
 
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.size());
@@ -99,53 +99,24 @@ public class ResenaServiceTest {
     }
 
     @Test
-    void obtenerResenaPorId_existente_devuelveResena() {
+    void getResenaById_existente_devuelveResena() {
         when(resenaRepository.findById(1L)).thenReturn(Optional.of(resena));
 
-        Resena resultado = resenaService.obtenerResenaPorId(1L);
+        Resena resultado = resenaService.getResenaById(1L);
 
         assertNotNull(resultado);
         assertEquals(resena.getIdResena(), resultado.getIdResena());
     }
 
     @Test
-    void obtenerResenaPorId_noExistente_lanzaExcepcion() {
+    void getResenaById_noExistente_lanzaExcepcion() {
         when(resenaRepository.findById(99L)).thenReturn(Optional.empty());
 
         RuntimeException excepcion = assertThrows(RuntimeException.class, () -> {
-            resenaService.obtenerResenaPorId(99L);
+            resenaService.getResenaById(99L);
         });
 
-        assertEquals("Resena no encontrada con el ID: 99", excepcion.getMessage());
-    }
-
-    @Test
-    void actualizarResena_existente_devuelveResenaActualizada() {
-        when(resenaRepository.existsById(1L)).thenReturn(true);
-        when(resenaRepository.save(any(Resena.class))).thenReturn(resena);
-
-        Date nuevaFecha = new Date();
-        Resena nueva = new Resena(null, "Actualizada", 4, nuevaFecha, 100L);
-
-        Resena resultado = resenaService.actualizarResena(1L, nueva);
-
-        assertNotNull(resultado);
-        assertEquals(1L, resultado.getIdResena());
-        verify(resenaRepository).save(nueva);
-    }
-
-    @Test
-    void actualizarResena_noExistente_lanzaExcepcion() {
-        when(resenaRepository.existsById(99L)).thenReturn(false);
-
-        Resena nueva = new Resena(null, "Intento fallido", 3, new Date(), 101L);
-
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> {
-            resenaService.actualizarResena(99L, nueva);
-        });
-
-        assertEquals("Resena no encontrada con el ID: 99", ex.getMessage());
-        verify(resenaRepository, never()).save(any());
+        assertEquals("Lo sentimos, la reseña no pudo ser encontrada.", excepcion.getMessage());
     }
 
     @Test

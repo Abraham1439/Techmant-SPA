@@ -1,9 +1,7 @@
 package com.techmant.Gestion_resena.controller;
 
-import java.net.URI;
+
 import java.util.List;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.techmant.Gestion_resena.model.Resena;
 import com.techmant.Gestion_resena.service.ResenaService;
 
@@ -28,101 +27,86 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Resenas", description = "API para gestionar resenas del sistema")
 public class ResenaController {
 
-    
     @Autowired
     private ResenaService resenaService;
-   
-  @Operation(
-        summary = "Crear una nueva reseña",
-        description = "Registra una nueva reseña en la base de datos."
-    )
+
+// Endpoint para obtener todas las reseñas
+    @Operation(summary = "Obtener todas las reseñas", description = "Devuelve una lista con todas las reseñas registradas")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de reseñas obtenida correctamente", content = @Content(schema = @Schema(implementation = Resena.class))),
+        @ApiResponse(responseCode = "204", description = "No hay reseñas registradas")
+    })
+    @GetMapping
+    public ResponseEntity<List<Resena>> listarResenas() {
+        List<Resena> resenas = resenaService.getResenas();
+        if (resenas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(resenas);
+    }
+
+    // Endpoint para agregar una nueva reseña
+    @Operation(summary = "Agregar una nueva reseña", description = "Registra una nueva reseña asociada a un usuario")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Reseña creada exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
-    
     @PostMapping
-    public ResponseEntity<Resena> crearResena(@RequestBody Resena resena) {
-    try {
-        Resena nueva = resenaService.crearResenaConValidacion(resena);
-        URI location = URI.create("/api/v1/resena/" + nueva.getIdResena());
-        return ResponseEntity.created(location).body(nueva);
-    } catch (RuntimeException e) {
-        // Error cuando el usuario no existe u otro error controlado
-        return ResponseEntity.badRequest().body(null);
-    } catch (Exception e) {
-        // Cualquier otro error inesperado
-        return ResponseEntity.status(500).body(null);
+    public ResponseEntity<?> agregarResena(@RequestBody Resena nuevaResena) {
+        try {
+            Resena resena = resenaService.agregarResena(nuevaResena);
+            return ResponseEntity.status(201).body(resena);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
     }
-}
 
-    @Operation(
-        summary = "Obtener todas las reseñas",
-        description = "Devuelve una lista con todas las reseñas registradas."
-    )
-    @GetMapping
-    public ResponseEntity<List<Resena>> obtenerTodasLasResenas() {
-    try {
-        List<Resena> resenas = resenaService.obtenerTodasLasResenas();
-        return ResponseEntity.ok(resenas);
-    } catch (Exception e) {
-        // Loguea el error para depuración
-        e.printStackTrace();
-        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al obtener las reseñas", e);
-    }
-}
-
-
-    @Operation(
-        summary = "Obtener reseña por ID",
-        description = "Busca una reseña específica usando su ID."
-    )
+    // Endpoint para buscar una reseña por ID
+    @Operation(summary = "Buscar reseña por ID", description = "Obtiene una reseña específica según su ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Reseña encontrada"),
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Resena> obtenerResenaPorId(@PathVariable Long id) {
-        Resena resena = resenaService.obtenerResenaPorId(id);
-        if (resena == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reseña no encontrada");
-        }
+    public ResponseEntity<Resena> buscarResenaPorId(@PathVariable Long id) {
+        Resena resena = resenaService.getResenaById(id);
         return ResponseEntity.ok(resena);
     }
 
-    @Operation(
-        summary = "Actualizar reseña",
-        description = "Actualiza los datos de una reseña existente por ID."
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Reseña actualizada correctamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
-        @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<Resena> actualizarResena(@PathVariable Long id, @RequestBody Resena resena) {
-        Resena actualizado = resenaService.actualizarResena(id, resena);
-        if (actualizado == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reseña no encontrada con ID: " + id);
-        }
-        return ResponseEntity.ok(actualizado);
-    }
-
-    @Operation(
-        summary = "Eliminar reseña",
-        description = "Elimina una reseña por su ID."
-    )
+    // Endpoint para eliminar una reseña mediante su ID
+    @Operation(summary = "Eliminar reseña", description = "Elimina una reseña existente por su ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Reseña eliminada exitosamente"),
         @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarResena(@PathVariable Long id) {
-    Resena resena = resenaService.obtenerResenaPorId(id);
-    if (resena == null) {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reseña no encontrada");
+    public ResponseEntity<?> eliminarResena(@PathVariable Long id) {
+        try {
+            resenaService.eliminarResena(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
-    resenaService.eliminarResena(id);
-    return ResponseEntity.noContent().build();
-}
+
+    // Endpoint para actualizar una reseña mediante su ID
+    @Operation(summary = "Actualizar reseña por ID", description = "Actualiza los datos de una reseña existente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Reseña actualizada correctamente"),
+        @ApiResponse(responseCode = "404", description = "Reseña no encontrada")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<Resena> actualizarResena(@PathVariable Long id, @RequestBody Resena resenaActualizada) {
+        try {
+            Resena resena = resenaService.getResenaById(id);
+            // Actualizar los campos de la reseña
+            resena.setComentario(resenaActualizada.getComentario());
+            resena.setCalificacion(resenaActualizada.getCalificacion());
+            // Guardar la reseña actualizada
+            resenaService.agregarResena(resena);
+            return ResponseEntity.ok(resena);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

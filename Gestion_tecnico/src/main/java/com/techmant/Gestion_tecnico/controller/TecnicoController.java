@@ -72,7 +72,6 @@ public class TecnicoController {
     @Operation(summary = "Actualizar técnico", description = "Actualiza los datos de un técnico existente por ID.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Técnico actualizado correctamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
         @ApiResponse(responseCode = "404", description = "Técnico no encontrado")
     })
     @PutMapping("/{id}")
